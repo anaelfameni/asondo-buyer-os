@@ -6,7 +6,7 @@ import { asondoData } from "@/lib/asondo-data";
 import { useI18n } from "@/lib/i18n-context";
 import { AnimatedSection } from "@/app/components/AnimatedSection";
 import { AnimatedCounter } from "@/app/components/AnimatedCounter";
-import { CheckCircle2, ChevronDown, ArrowRight, Sparkles, MapPin, TreePine, TrendingUp, Wallet } from "lucide-react";
+import { CheckCircle2, ChevronDown, ArrowRight, MapPin, TreePine, TrendingUp, Wallet } from "lucide-react";
 
 const pillarConfig: Record<string, { grad: string; ring: string; icon: React.ElementType }> = {
   traceability: { grad: "from-[#E8833D] to-[#D06B1F]", ring: "#E8833D", icon: MapPin },
