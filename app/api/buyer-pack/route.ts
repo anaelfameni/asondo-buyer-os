@@ -79,21 +79,12 @@ async function getBrowser(): Promise<Browser> {
 async function launchServerless(): Promise<Browser> {
   // The dep is declared in package.json; Vercel installs it during
   // the build. Hidden behind a runtime conditional + dynamic import
-  // so the module is never touched on a local Windows laptop. The
-  // package ships no types of its own, and marking it as a webpack
-  // external (see next.config.mjs) means TypeScript can't resolve it
-  // either — hence the explicit suppression. The shape below is the
-  // public runtime API documented at https://github.com/Sparticuz/chromium.
-  // @ts-expect-error optional serverless dep, resolved at runtime on Vercel only
-  const mod = (await import("@sparticuz/chromium")) as unknown as {
-    default: {
-      args: string[];
-      executablePath: () => Promise<string>;
-      defaultViewport: { width: number; height: number } | null;
-      setHeadlessMode?: (mode: boolean | "shell") => void;
-    };
-  };
-  const chromium = mod.default ?? (mod as unknown as typeof mod.default);
+  // so the module is never touched on a local Windows laptop. Types
+  // come from the ambient declaration in `types/sparticuz-chromium.d.ts`,
+  // and the package is marked as a webpack external in `next.config.mjs`
+  // so Node loads it natively at runtime (only on Vercel, never locally).
+  const mod = await import("@sparticuz/chromium");
+  const chromium = mod.default ?? mod;
 
   return puppeteer.launch({
     headless: true,
