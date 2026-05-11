@@ -20,6 +20,13 @@ const InteractiveMap = dynamic(() => import("@/app/components/InteractiveMap"), 
 export function SupplyMap() {
   const { t } = useI18n();
   const sourcingZones = asondoData.supplyZones.filter((z) => z.type === "sourcing-region");
+  // Map zones to localized labels by their position in the data array.
+  // Order in asondo-data.ts: 0=central, 1=eastern, 2=western.
+  const zoneLabels: string[] = [
+    t.supply.zones.central,
+    t.supply.zones.eastern,
+    t.supply.zones.western,
+  ];
 
   return (
     <section
@@ -93,11 +100,13 @@ export function SupplyMap() {
                   </h3>
                 </div>
                 <ul className="space-y-2.5">
-                  {sourcingZones.map((zone) => (
+                  {sourcingZones.map((zone, idx) => (
                     <li key={zone.name} className="flex items-start gap-3">
                       <div className="w-1.5 h-1.5 rounded-full bg-[#E8833D] mt-2 shrink-0" />
                       <div className="flex-1">
-                        <p className="text-sm font-semibold text-[#1A1A1A]">{zone.region}</p>
+                        <p className="text-sm font-semibold text-[#1A1A1A]">
+                          {zoneLabels[idx] ?? zone.region}
+                        </p>
                         <p className="text-xs text-[#6B7280]">{zone.department}</p>
                       </div>
                     </li>

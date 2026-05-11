@@ -49,7 +49,7 @@ export function ProgrammeDashboard() {
                 <AnimatedCounter value={asondoData.pillars.length} />
               </div>
               <div className="text-[10px] md:text-xs uppercase tracking-wider mt-2 text-white/70 font-semibold">
-                Piliers
+                {t.programme.stats.pillars}
               </div>
             </div>
             <div className="relative text-center">
@@ -57,7 +57,7 @@ export function ProgrammeDashboard() {
                 <AnimatedCounter value={totalItems} />
               </div>
               <div className="text-[10px] md:text-xs uppercase tracking-wider mt-2 text-white/70 font-semibold">
-                Engagements
+                {t.programme.stats.commitments}
               </div>
             </div>
             <div className="relative text-center">
@@ -66,7 +66,7 @@ export function ProgrammeDashboard() {
                 <span className="text-2xl">+</span>
               </div>
               <div className="text-[10px] md:text-xs uppercase tracking-wider mt-2 text-white/70 font-semibold">
-                Ans d&apos;expérience
+                {t.programme.stats.yearsExperience}
               </div>
             </div>
             <div className="relative text-center">
@@ -74,7 +74,7 @@ export function ProgrammeDashboard() {
                 <AnimatedCounter value={1} suffix="er" />
               </div>
               <div className="text-[10px] md:text-xs uppercase tracking-wider mt-2 text-white/70 font-semibold">
-                Producteur mondial
+                {t.programme.stats.globalProducer}
               </div>
             </div>
           </div>

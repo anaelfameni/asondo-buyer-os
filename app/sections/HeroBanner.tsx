@@ -4,7 +4,7 @@ import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion
 import { asondoData } from "@/lib/asondo-data";
 import { useI18n } from "@/lib/i18n-context";
 import { IndustryAlignment } from "../components/IndustryAlignment";
-import { ShieldCheck, Clock, MapPin, ArrowRight, CheckCircle2, ChevronDown } from "lucide-react";
+import { ShieldCheck, Clock, MapPin, ArrowRight, CheckCircle2 } from "lucide-react";
 import { useRef } from "react";
 import Image from "next/image";
 
@@ -37,11 +37,6 @@ export function HeroBanner() {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Compute the last 2 words of tagline for the gradient highlight
-  const taglineWords = t.hero.tagline.split(" ");
-  const highlightCount = 3;
-  const taglineMain = taglineWords.slice(0, -highlightCount).join(" ");
-  const taglineHighlight = taglineWords.slice(-highlightCount).join(" ");
 
   return (
     <section
@@ -121,7 +116,7 @@ export function HeroBanner() {
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-[#F2B83E]" />
                 </span>
                 <ShieldCheck className="w-4 h-4" />
-                <span className="text-white">{asondoData.identity.licence}</span>
+                <span className="text-white">{t.hero.licenceBadge}</span>
               </div>
             </motion.div>
 
@@ -131,10 +126,10 @@ export function HeroBanner() {
               className="text-display font-bold mb-6 text-balance leading-[0.98]"
               style={{ textShadow: "0 2px 24px rgba(0,0,0,0.3)" }}
             >
-              {taglineMain}{" "}
+              <span className="whitespace-nowrap">{t.hero.taglineMain}</span>
               <span className="block mt-1">
                 <span className="bg-gradient-to-r from-[#F2B83E] via-[#FFE9B0] to-[#F2B83E] bg-clip-text text-transparent">
-                  {taglineHighlight}
+                  {t.hero.taglineHighlight}
                 </span>
               </span>
             </motion.h1>
@@ -243,19 +238,6 @@ export function HeroBanner() {
         </motion.div>
       </motion.div>
 
-      {/* Scroll indicator */}
-      {!reduceMotion && (
-        <motion.div
-          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2"
-          animate={{ y: [0, 6, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <span className="text-[10px] uppercase tracking-[0.3em] text-white/70 font-medium">
-            Scroll
-          </span>
-          <ChevronDown className="w-4 h-4 text-white/70" />
-        </motion.div>
-      )}
     </section>
   );
 }

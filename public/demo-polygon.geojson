@@ -1,0 +1,44 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "title": "Asondo demo plot — sample only",
+    "description": "Public demonstration polygon. This is NOT a real producer plot and does NOT identify any real cooperative member. Real polygons (RFC 7946 GeoJSON, accuracy <= 10 m) are submitted to the EUDR Information System and shared with verified buyers under NDA in the Buyer Pack.",
+    "license": "All rights reserved — Asondo SA",
+    "generator": "Asondo asondo.ci",
+    "anonymized": true,
+    "crs": "EPSG:4326",
+    "asondo_doc": "https://asondo.ci/eudr/due-diligence-statement"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "id": "asondo-demo-001",
+      "properties": {
+        "name": "Demo plot · Central basin",
+        "cooperative": "Anonymized",
+        "farmer_id": "Anonymized",
+        "area_ha": 4.8,
+        "main_crop": "Theobroma cacao",
+        "cut_off_date": "2020-12-31",
+        "deforestation_alert": "none",
+        "label": "DEMO · NOT a real plot",
+        "notice": "Real polygons available to verified buyers under NDA."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-5.0285, 6.6920],
+            [-5.0162, 6.6948],
+            [-5.0098, 6.7041],
+            [-5.0135, 6.7180],
+            [-5.0273, 6.7195],
+            [-5.0365, 6.7102],
+            [-5.0340, 6.6985],
+            [-5.0285, 6.6920]
+          ]
+        ]
+      }
+    }
+  ]
+}

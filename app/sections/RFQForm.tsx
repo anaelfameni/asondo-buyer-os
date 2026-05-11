@@ -2,16 +2,19 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useI18n } from "@/lib/i18n-context";
 import { AnimatedSection } from "@/app/components/AnimatedSection";
-import { Send, CheckCircle2, Clock, FileText, Package, MapPin, Building2, User, Mail as MailIcon } from "lucide-react";
+import { Send, CheckCircle2, Clock, FileText, Package, MapPin, Building2, User, Mail as MailIcon, Loader2 } from "lucide-react";
 
 export function RFQForm() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [submitted, setSubmitted] = useState(false);
+  const [reference, setReference] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -22,10 +25,65 @@ export function RFQForm() {
     message: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 6000);
+    if (busy) return;
+    setBusy(true);
+    try {
+      const res = await fetch("/api/rfq", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = (await res.json()) as {
+        ok?: boolean;
+        reference?: string;
+        errors?: Record<string, string>;
+      };
+      if (res.ok && data.ok && data.reference) {
+        setReference(data.reference);
+        setSubmitted(true);
+        toast.success(
+          locale === "fr"
+            ? `Demande reçue (${data.reference})`
+            : `Request received (${data.reference})`
+        );
+        setTimeout(() => {
+          setSubmitted(false);
+          setReference(null);
+          setFormData({
+            name: "",
+            email: "",
+            company: "",
+            country: "",
+            volume: "",
+            port: "",
+            message: "",
+          });
+        }, 8000);
+      } else if (res.status === 400 && data.errors) {
+        const firstField = Object.keys(data.errors)[0];
+        toast.error(
+          locale === "fr"
+            ? `Veuillez corriger le champ : ${firstField}`
+            : `Please correct the field: ${firstField}`
+        );
+      } else {
+        toast.error(
+          locale === "fr"
+            ? "Erreur serveur. Réessayez ou écrivez à contact@asondo.ci."
+            : "Server error. Please retry or email contact@asondo.ci."
+        );
+      }
+    } catch {
+      toast.error(
+        locale === "fr"
+          ? "Réseau indisponible. Réessayez."
+          : "Network unavailable. Please retry."
+      );
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -81,7 +139,7 @@ export function RFQForm() {
                         {t.rfq.success.followUp}
                       </p>
                       <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FEF3E7] text-[#D06B1F] text-sm font-mono font-semibold">
-                        {t.rfq.success.reference} : RFQ-{Date.now().toString(36).toUpperCase()}
+                        {t.rfq.success.reference} : {reference ?? "—"}
                       </div>
                     </motion.div>
                   ) : (
@@ -167,10 +225,20 @@ export function RFQForm() {
 
                       <button
                         type="submit"
-                        className="group relative w-full overflow-hidden inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-gradient-to-r from-[#E8833D] to-[#D06B1F] text-white font-semibold text-lg shadow-xl shadow-[#E8833D]/30 hover:shadow-2xl hover:shadow-[#E8833D]/40 hover:-translate-y-0.5 transition-all btn-premium"
+                        disabled={busy}
+                        className="group relative w-full overflow-hidden inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-gradient-to-r from-[#E8833D] to-[#D06B1F] text-white font-semibold text-lg shadow-xl shadow-[#E8833D]/30 hover:shadow-2xl hover:shadow-[#E8833D]/40 hover:-translate-y-0.5 transition-all btn-premium disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                       >
-                        {t.rfq.submit}
-                        <Send className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                        {busy ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            {locale === "fr" ? "Envoi…" : "Sending…"}
+                          </>
+                        ) : (
+                          <>
+                            {t.rfq.submit}
+                            <Send className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                          </>
+                        )}
                       </button>
 
                       <p className="text-xs text-center text-[#6B7280] leading-relaxed pt-2">

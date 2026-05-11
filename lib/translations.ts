@@ -10,7 +10,8 @@ export interface TranslationShape {
     requestQuote: string;
   };
   hero: {
-    tagline: string;
+    taglineMain: string;
+    taglineHighlight: string;
     description: string;
     experience: string;
     origin: string;
@@ -18,6 +19,13 @@ export interface TranslationShape {
     ctaSecondary: string;
     statProducerWorld: string;
     statEudrReady: string;
+    /**
+     * Localised CCC licence pill displayed at the very top of the hero.
+     * The English copy stays close to `asondoData.identity.licence` but
+     * is now bilingual instead of always rendering in English on the
+     * French version of the site.
+     */
+    licenceBadge: string;
     cards: {
       origineLabel: string;
       origineValue: string;
@@ -64,6 +72,48 @@ export interface TranslationShape {
     ndaNote: string;
     criteriaTitle: string;
     criteria: string[];
+    zones: {
+      central: string;
+      eastern: string;
+      western: string;
+    };
+    /**
+     * UI labels rendered directly inside the Leaflet map (legend chip,
+     * sourcing-row label, accuracy chip on each popup). Localising them
+     * here keeps the map fully bilingual instead of half-French as the
+     * first release was.
+     */
+    legend: string;
+    sourcing: string;
+    accuracy: {
+      exact: string;
+      approximate: string;
+    };
+    /**
+     * Per-zone narrative copy. Keys mirror `supplyZones` in
+     * `lib/asondo-data.ts`: `hq` for the Treichville HQ marker, then
+     * the three sourcing basins. `region` is the visible title in the
+     * popup, `department` is the small “départements” line and
+     * `description` is the longer sentence.
+     */
+    zoneDetails: {
+      hq: { region: string; department: string; description: string };
+      central: { region: string; department: string; description: string };
+      eastern: { region: string; department: string; description: string };
+      western: { region: string; department: string; description: string };
+    };
+    /**
+     * Labels and copy for the public anonymised demo polygon shown
+     * on the supply map. Real polygons are never published here and
+     * are only shared with verified buyers under NDA.
+     */
+    demoPolygon: {
+      legend: string;
+      title: string;
+      description: string;
+      area: string;
+      badge: string;
+    };
   };
   programme: {
     title: string;
@@ -73,6 +123,18 @@ export interface TranslationShape {
     itemsCount: string;
     mappingQuestion: string;
     viewMatrix: string;
+    /**
+     * Top stat banner of the Programme section. Each label sits under
+     * an animated counter (4 cells: pillars, commitments, years of
+     * experience, global producer rank). Localising them removes the
+     * hard-coded French copy from `ProgrammeDashboard.tsx`.
+     */
+    stats: {
+      pillars: string;
+      commitments: string;
+      yearsExperience: string;
+      globalProducer: string;
+    };
   };
   ai: {
     title: string;
@@ -126,6 +188,18 @@ export interface TranslationShape {
     tagline: string;
     contact: string;
     quickLinks: string;
+    industryStandards: string;
+    legalTitle: string;
+    legal: {
+      mentions: string;
+      privacy: string;
+      cgu: string;
+    };
+    newsletterTitle: string;
+    newsletterPlaceholder: string;
+    newsletterCta: string;
+    newsletterHint: string;
+    pressContact: string;
     links: {
       eudr: string;
       network: string;
@@ -151,7 +225,8 @@ export const translations: Record<Locale, TranslationShape> = {
       requestQuote: "Demander un devis",
     },
     hero: {
-      tagline: "Votre partenaire ivoirien pour l'export du cacao.",
+      taglineMain: "Votre partenaire ivoirien",
+      taglineHighlight: "pour l'export du cacao.",
       description: "Le cacao, héritage national ivoirien, a toujours été présent dans nos vies. Après 15 ans dans le négoce des matières premières et la supply chain, nous mettons notre expérience au service des défis du cacao ivoirien : lien direct entre partenaires internationaux et coopératives de petits producteurs, traçabilité complète, pratiques durables et conformité EUDR.",
       experience: "ans d'expérience",
       origin: "Côte d'Ivoire, 1er producteur mondial de cacao",
@@ -159,6 +234,7 @@ export const translations: Record<Locale, TranslationShape> = {
       ctaSecondary: "Demander un devis",
       statProducerWorld: "Producteur mondial",
       statEudrReady: "Ready",
+      licenceBadge: "Exportateur agréé CCC 2025/26",
       cards: {
         origineLabel: "Origine",
         origineValue: "Côte d'Ivoire",
@@ -247,6 +323,51 @@ export const translations: Record<Locale, TranslationShape> = {
         "Zone de production et âge des plantations",
         "Alignement avec la vision Asondo",
       ],
+      zones: {
+        central: "Zone Bouaké / Yamoussoukro",
+        eastern: "Zone Abengourou / Aboisso",
+        western: "Zone Daloa / San-Pédro",
+      },
+      legend: "Légende",
+      sourcing: "Sourcing",
+      accuracy: {
+        exact: "Localisation exacte",
+        approximate: "Région approximative",
+      },
+      zoneDetails: {
+        hq: {
+          region: "Abidjan",
+          department: "Treichville",
+          description:
+            "Siège social Asondo et coordination logistique.",
+        },
+        central: {
+          region: "Bassin Centre — Bouaké / Yamoussoukro",
+          department: "Départements Gôh · Lôh-Djiboua · Marahoué",
+          description:
+            "Zone de sourcing par réseau de coopératives. Géolocalisation parcellaire disponible sous NDA.",
+        },
+        eastern: {
+          region: "Bassin Est — Abengourou / Aboisso",
+          department: "Départements Indénié-Djuablin · Sud-Comoé",
+          description:
+            "Zone de sourcing par réseau de coopératives. Géolocalisation parcellaire disponible sous NDA.",
+        },
+        western: {
+          region: "Bassin Ouest — Daloa / San-Pédro",
+          department: "Départements Haut-Sassandra · San-Pédro",
+          description:
+            "Zone de sourcing par réseau de coopératives. Géolocalisation parcellaire disponible sous NDA.",
+        },
+      },
+      demoPolygon: {
+        legend: "Polygone démo",
+        title: "Polygone de démonstration",
+        description:
+          "Échantillon public anonymisé, fictif. Illustre le format des polygones GPS soumis au système d'information EUDR. Les polygones réels sont partagés aux acheteurs vérifiés sous NDA dans le Buyer Pack.",
+        area: "Surface",
+        badge: "Démo · non réel",
+      },
     },
     programme: {
       title: "Le programme Asondo",
@@ -256,6 +377,12 @@ export const translations: Record<Locale, TranslationShape> = {
       itemsCount: "engagements",
       mappingQuestion: "Vous voulez voir comment ces piliers s'alignent à la conformité EUDR ?",
       viewMatrix: "Voir la matrice de preuves EUDR",
+      stats: {
+        pillars: "Piliers",
+        commitments: "Engagements",
+        yearsExperience: "Ans d'expérience",
+        globalProducer: "Producteur mondial",
+      },
     },
     ai: {
       title: "Demandez à Asondo",
@@ -320,6 +447,18 @@ export const translations: Record<Locale, TranslationShape> = {
       tagline: "Engagés pour une filière cacao durable et compétitive. Export de cacao ivoirien traçable vers le monde.",
       contact: "Contact",
       quickLinks: "Liens rapides",
+      industryStandards: "Standards de l'industrie",
+      legalTitle: "Informations légales",
+      legal: {
+        mentions: "Mentions légales",
+        privacy: "Politique de confidentialité",
+        cgu: "Conditions générales",
+      },
+      newsletterTitle: "Veille EUDR & cacao",
+      newsletterPlaceholder: "Votre email professionnel",
+      newsletterCta: "S'abonner",
+      newsletterHint: "Une lettre par trimestre. Désinscription en un clic.",
+      pressContact: "Demandes presse",
       links: {
         eudr: "Preuves EUDR",
         network: "Réseau",
@@ -343,7 +482,8 @@ export const translations: Record<Locale, TranslationShape> = {
       requestQuote: "Request a quote",
     },
     hero: {
-      tagline: "Your Ivorian cocoa export partner.",
+      taglineMain: "Your Ivorian",
+      taglineHighlight: "cocoa export partner.",
       description: "Cocoa, a quintessentially Ivorian national heritage, has always been present in our lives. After 15 years in soft commodity trading and supply chain, we now bring our experience to tackle Ivorian cocoa procurement challenges: a direct link between international partners and groups of small Ivorian cocoa producers, full traceability, sustainable practices and EUDR compliance.",
       experience: "years experience",
       origin: "Côte d'Ivoire, #1 Global Cocoa Producer",
@@ -351,6 +491,7 @@ export const translations: Record<Locale, TranslationShape> = {
       ctaSecondary: "Request a Quote",
       statProducerWorld: "Global producer",
       statEudrReady: "Ready",
+      licenceBadge: "CCC Licensed Exporter 2025/26",
       cards: {
         origineLabel: "Origin",
         origineValue: "Côte d'Ivoire",
@@ -439,6 +580,51 @@ export const translations: Record<Locale, TranslationShape> = {
         "Production area & farm age",
         "Alignment with Asondo vision",
       ],
+      zones: {
+        central: "Bouaké / Yamoussoukro area",
+        eastern: "Abengourou / Aboisso area",
+        western: "Daloa / San-Pédro area",
+      },
+      legend: "Legend",
+      sourcing: "Sourcing",
+      accuracy: {
+        exact: "Exact location",
+        approximate: "Approximate region",
+      },
+      zoneDetails: {
+        hq: {
+          region: "Abidjan",
+          department: "Treichville",
+          description:
+            "Asondo headquarters and logistics coordination.",
+        },
+        central: {
+          region: "Central basin — Bouaké / Yamoussoukro",
+          department: "Gôh · Lôh-Djiboua · Marahoué départements",
+          description:
+            "Cooperative-network sourcing area. Plot-level geolocation available under NDA.",
+        },
+        eastern: {
+          region: "Eastern basin — Abengourou / Aboisso",
+          department: "Indénié-Djuablin · Sud-Comoé départements",
+          description:
+            "Cooperative-network sourcing area. Plot-level geolocation available under NDA.",
+        },
+        western: {
+          region: "Western basin — Daloa / San-Pédro",
+          department: "Haut-Sassandra · San-Pédro départements",
+          description:
+            "Cooperative-network sourcing area. Plot-level geolocation available under NDA.",
+        },
+      },
+      demoPolygon: {
+        legend: "Demo plot",
+        title: "Demonstration polygon",
+        description:
+          "Public anonymised, fictional sample. Illustrates the format of GPS polygons submitted to the EUDR information system. Real polygons are shared with verified buyers under NDA in the Buyer Pack.",
+        area: "Area",
+        badge: "Demo · not real",
+      },
     },
     programme: {
       title: "The Asondo Programme",
@@ -448,6 +634,12 @@ export const translations: Record<Locale, TranslationShape> = {
       itemsCount: "commitments",
       mappingQuestion: "Want to see how these pillars map to EUDR compliance?",
       viewMatrix: "View EUDR Evidence Matrix",
+      stats: {
+        pillars: "Pillars",
+        commitments: "Commitments",
+        yearsExperience: "Years of experience",
+        globalProducer: "Global producer",
+      },
     },
     ai: {
       title: "Ask Asondo Anything",
@@ -511,6 +703,18 @@ export const translations: Record<Locale, TranslationShape> = {
       tagline: "Committed to a sustainable and competitive cocoa value chain. Exporting traceable Ivorian cocoa to the world.",
       contact: "Contact",
       quickLinks: "Quick Links",
+      industryStandards: "Industry standards",
+      legalTitle: "Legal information",
+      legal: {
+        mentions: "Legal notice",
+        privacy: "Privacy policy",
+        cgu: "Terms of use",
+      },
+      newsletterTitle: "EUDR & cocoa briefing",
+      newsletterPlaceholder: "Your business email",
+      newsletterCta: "Subscribe",
+      newsletterHint: "One letter per quarter. Unsubscribe anytime.",
+      pressContact: "Press inquiries",
       links: {
         eudr: "EUDR Evidence",
         network: "Supply Network",

@@ -1,16 +1,92 @@
+/**
+ * Single source of truth for Asondo company data.
+ *
+ * Every value in this file is sourced from a public, verifiable record.
+ * Anything that can not be verified is either omitted or surfaced as a
+ * `null` placeholder so the UI can flag it as "to be filled" rather
+ * than inventing a number.
+ *
+ * Sources (last verified 2026-05-11):
+ *  - Site officiel : https://asondo.ci/en/contact/, /en/our-story/, /en/our-program/
+ *  - Federation of Cocoa Commerce member page : https://www.cocoafederation.com/the-fcc/fcc-members/asondo-sa
+ *  - Annonce légale notariée Maître Christine E. Nanou-Adou (Abidjan.net) :
+ *    https://business.abidjan.net/annonces-legales/3-augmentation-de-capital/112957-asondo-sa
+ *    → AGE 21/04/2021, capital porté à 300 000 000 FCFA, transfert siège,
+ *      dépôt Greffe Tribunal de Commerce d'Abidjan 13/06/2022 n° 27809/GTCA/RC/2022.
+ *  - CCC export licences 2025/26 : Reuters / Conseil du Café-Cacao (109 licences pays).
+ */
 export const asondoData = {
   identity: {
     name: "Asondo",
+    legalName: "ASONDO SA",
     tagline: "Your Ivorian cocoa bean exporter.",
     experience: "15 years in soft commodity trading and supply chain",
     licence: "CCC Licensed Exporter 2025/26",
-    address: "01 BP 4791 ABJ 01, Treichville, zone 3, Rue des ferronniers, immeuble le blason 3ème étage",
+    // Site officiel + fiche FCC : "01 BP 4791 ABJ 01" — adresse de
+    // contact courante. L'annonce notariée 2022 mentionne aussi
+    // "06 BP 914 ABIDJAN 06" (siège déposé). `address` reste compatible
+    // avec les anciens consommateurs (BP + voie + immeuble + étage),
+    // `postalBox` et `postalBoxRegistered` sont là pour les pages
+    // légales qui ont besoin de la donnée structurée.
+    address:
+      "01 BP 4791 ABJ 01, Treichville, zone 3, Rue des ferronniers, immeuble le blason 3ème étage",
+    postalBox: "01 BP 4791 ABJ 01",
+    postalBoxRegistered: "06 BP 914 ABIDJAN 06",
+    streetAddress:
+      "Treichville, zone 3, Rue des ferronniers, immeuble le blason 3ème étage",
     city: "Abidjan",
     country: "Côte d'Ivoire",
     phone: "+225 07 99 85 29 16",
+    phoneFixed: "+225 27 21 54 40 16",
     email: "admin@asondo.ci",
     website: "https://asondo.ci",
-    founded: "After 15 years in trading (est. ~2010-2015)",
+  },
+
+  /**
+   * Données légales officielles, vérifiables sur l'annonce notariée
+   * publiée par Abidjan.net (lien dans le commentaire d'en-tête).
+   * Les valeurs marquées `null` n'ont pas de source publique et sont
+   * affichées en placeholder dans l'UI.
+   */
+  legal: {
+    legalForm: "SA avec Conseil d'Administration et PDG",
+    legalFormEn: "Public Limited Company (SA) with Board of Directors and Chairman-CEO",
+    shareCapitalXOF: 300_000_000,
+    shareCapitalRaisedAt: "2021-04-21",
+    rccm: "CI-ABJ-03-2020-B14-11898",
+    courtFiling: "27809/GTCA/RC/2022",
+    courtFilingDate: "2022-06-13",
+    court: "Tribunal de commerce d'Abidjan",
+    notary: "Maître Christine E. Nanou-Adou — Notaire à Abidjan",
+    sourceUrl:
+      "https://business.abidjan.net/annonces-legales/3-augmentation-de-capital/112957-asondo-sa",
+    /**
+     * NIF / CC (Compte Contribuable) et Code Importateur-Exportateur
+     * du Ministère du Commerce CI : non publiés sur les sources
+     * publiques consultées. Laissé `null` pour que la page mentions
+     * légales affiche "à compléter" plutôt qu'une valeur inventée.
+     */
+    nif: null as string | null,
+    importExportCode: null as string | null,
+  },
+
+  /**
+   * Représentant légal. Source : information transmise par
+   * l'utilisateur (fondateur du projet). À confirmer publiquement par
+   * Asondo avant publication finale.
+   */
+  leadership: {
+    ceoName: "Ludovic M'bahia Blé",
+    ceoRole: "Président-Directeur Général",
+    ceoRoleEn: "Chairman & Chief Executive Officer (PDG)",
+    /**
+     * Compliance Officer EUDR : nomination interne, communiquée
+     * nominativement aux acheteurs sous Buyer Pack / NDA. Pas de
+     * publication publique du nom à ce stade — c'est aligné avec la
+     * pratique majoritaire des opérateurs EUDR.
+     */
+    complianceOfficerName: null as string | null,
+    complianceOfficerEmail: "compliance@asondo.ci",
   },
 
   values: [

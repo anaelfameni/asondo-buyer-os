@@ -1,16 +1,83 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 import { useI18n } from "@/lib/i18n-context";
 import { AnimatedSection } from "@/app/components/AnimatedSection";
-import { Download, CheckCircle2 } from "lucide-react";
+import { Download, CheckCircle2, Loader2 } from "lucide-react";
 import { AsondoMark } from "../components/AsondoLogo";
 
 export function SamplePackCTA() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleDownload = () => {
-    alert(t.sample.alert);
+  const handleDownload = async () => {
+    if (isLoading) return;
+    setIsLoading(true);
+
+    const toastId = toast.loading(
+      locale === "fr"
+        ? "Génération du Buyer Pack en cours…"
+        : "Generating Buyer Pack…",
+      { duration: 30_000 }
+    );
+
+    try {
+      const res = await fetch("/api/buyer-pack", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lang: locale, source: "public-cta" }),
+      });
+
+      if (!res.ok) {
+        if (res.status === 429) {
+          throw new Error(
+            locale === "fr"
+              ? "Trop de téléchargements depuis votre poste. Réessayez plus tard."
+              : "Too many downloads from your IP. Please try again later."
+          );
+        }
+        throw new Error(
+          locale === "fr"
+            ? "Le serveur n'a pas pu générer le PDF. Réessayez."
+            : "Server failed to generate the PDF. Please try again."
+        );
+      }
+
+      const blob = await res.blob();
+      const filename =
+        extractFilename(res.headers.get("Content-Disposition")) ??
+        `Asondo-Buyer-Pack-${new Date().toISOString().slice(0, 10)}.pdf`;
+
+      // Trigger browser download.
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+
+      toast.success(
+        locale === "fr"
+          ? "Buyer Pack téléchargé."
+          : "Buyer Pack downloaded.",
+        { id: toastId }
+      );
+    } catch (err) {
+      toast.error(
+        err instanceof Error
+          ? err.message
+          : locale === "fr"
+          ? "Erreur inattendue."
+          : "Unexpected error.",
+        { id: toastId }
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -87,10 +154,19 @@ export function SamplePackCTA() {
           <AnimatedSection delay={0.4}>
             <button
               onClick={handleDownload}
-              className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-full bg-gradient-to-r from-[#F2B83E] to-[#D4A017] text-[#1F3D2F] font-bold text-lg shadow-xl shadow-[#F2B83E]/30 hover:shadow-2xl hover:shadow-[#F2B83E]/50 hover:-translate-y-1 transition-all btn-premium"
+              disabled={isLoading}
+              className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-full bg-gradient-to-r from-[#F2B83E] to-[#D4A017] text-[#1F3D2F] font-bold text-lg shadow-xl shadow-[#F2B83E]/30 hover:shadow-2xl hover:shadow-[#F2B83E]/50 hover:-translate-y-1 transition-all btn-premium disabled:cursor-not-allowed disabled:opacity-80 disabled:hover:translate-y-0"
             >
-              <Download className="w-5 h-5" />
-              {t.sample.download}
+              {isLoading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <Download className="w-5 h-5" />
+              )}
+              {isLoading
+                ? locale === "fr"
+                  ? "Génération en cours…"
+                  : "Generating…"
+                : t.sample.download}
             </button>
 
             <p className="text-sm text-white/50 mt-6 max-w-xl mx-auto leading-relaxed">
@@ -101,4 +177,19 @@ export function SamplePackCTA() {
       </div>
     </section>
   );
+}
+
+/**
+ * Pulls the filename out of a Content-Disposition header. The server
+ * sets it to `attachment; filename="Asondo-Buyer-Pack-…"`. We don't
+ * trust the client to decide the name (avoids HTML injection).
+ */
+function extractFilename(disposition: string | null): string | null {
+  if (!disposition) return null;
+  const match = /filename\*?="?([^";]+)"?/i.exec(disposition);
+  if (!match) return null;
+  const raw = match[1].trim();
+  // Drop charset prefix like `UTF-8''` if present (RFC 5987).
+  const cleaned = raw.replace(/^[A-Za-z0-9-]+''/, "");
+  return cleaned || null;
 }

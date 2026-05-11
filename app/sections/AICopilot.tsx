@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
-import { findResponse, chatResponsesByLocale } from "@/lib/chat-responses";
+import { chatResponsesByLocale, findResponse } from "@/lib/chat-responses";
 import { useI18n } from "@/lib/i18n-context";
 import { AnimatedSection } from "@/app/components/AnimatedSection";
 import { Send, User, Bot, Sparkles } from "lucide-react";
@@ -14,6 +14,10 @@ interface Message {
   content: string;
   followUp?: string[];
 }
+
+// Max number of past turns we send to the Gemini API for context.
+// Keep this small to limit tokens and latency.
+const HISTORY_LIMIT = 10;
 
 export function AICopilot() {
   const { t, locale } = useI18n();
@@ -45,26 +49,55 @@ export function AICopilot() {
     container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
   }, [messages, isTyping]);
 
-  const sendMessage = (text: string) => {
-    if (!text.trim()) return;
+  const sendMessage = async (text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed || isTyping) return;
 
     hasUserInteracted.current = true;
-    setMessages((prev) => [...prev, { role: "user", content: text }]);
     setInput("");
     setIsTyping(true);
 
-    setTimeout(() => {
-      const response = findResponse(text, locale);
+    // Snapshot the conversation BEFORE adding the new user message,
+    // so the API receives the prior turns as "history" and the new
+    // user turn as "message".
+    const priorHistory = messages
+      .filter((m) => m.role === "user" || m.role === "assistant")
+      .slice(-HISTORY_LIMIT)
+      .map((m) => ({ role: m.role, content: m.content }));
+
+    setMessages((prev) => [...prev, { role: "user", content: trimmed }]);
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: trimmed,
+          history: priorHistory,
+          locale,
+        }),
+      });
+
+      const data = (await res.json()) as { reply?: string; error?: string };
+      // The server always returns a `reply` (either Gemini or static KB).
+      // If for any reason `reply` is missing, fall back to a local
+      // static-KB lookup so the user still sees a useful Asondo answer.
+      const reply = data.reply ?? findResponse(trimmed, locale).response;
+
+      setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
+    } catch (err) {
+      console.error("[AICopilot] fetch error, using local KB:", err);
+      // Network failure (offline, blocked). Do NOT show a "service
+      // unavailable" toast — fall back to the local knowledge base so the
+      // visitor still gets a useful Asondo-scoped answer.
+      const localReply = findResponse(trimmed, locale).response;
       setMessages((prev) => [
         ...prev,
-        {
-          role: "assistant",
-          content: response.response,
-          followUp: response.followUp,
-        },
+        { role: "assistant", content: localReply },
       ]);
+    } finally {
       setIsTyping(false);
-    }, 600);
+    }
   };
 
   return (
@@ -211,11 +244,13 @@ export function AICopilot() {
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
                       placeholder={t.ai.placeholder}
-                      className="flex-1 h-12 bg-[#FDFBF7] border-[#E8833D]/20 focus:border-[#E8833D] focus:ring-[#E8833D]/20 rounded-full px-5"
+                      disabled={isTyping}
+                      className="flex-1 h-12 bg-[#FDFBF7] border-[#E8833D]/20 focus:border-[#E8833D] focus:ring-[#E8833D]/20 rounded-full px-5 disabled:opacity-60"
                     />
                     <button
                       type="submit"
-                      className="w-12 h-12 rounded-full bg-gradient-to-br from-[#E8833D] to-[#D06B1F] text-white flex items-center justify-center shadow-lg shadow-[#E8833D]/30 hover:shadow-xl hover:shadow-[#E8833D]/40 hover:scale-105 transition-all"
+                      disabled={isTyping || !input.trim()}
+                      className="w-12 h-12 rounded-full bg-gradient-to-br from-[#E8833D] to-[#D06B1F] text-white flex items-center justify-center shadow-lg shadow-[#E8833D]/30 hover:shadow-xl hover:shadow-[#E8833D]/40 hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                     >
                       <Send className="w-4 h-4" />
                     </button>

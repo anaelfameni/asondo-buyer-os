@@ -28,6 +28,9 @@ yarn-error.log*
 # local env files
 .env*.local
 
+# local demo data (RFQ leads, settings) — never commit real customer data
+/data/
+
 # vercel
 .vercel
 
