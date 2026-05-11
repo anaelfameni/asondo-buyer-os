@@ -48,6 +48,10 @@ type NavGroup = {
 
 const NAV_GROUPS: NavGroup[] = [
   {
+    label: { fr: "Accueil", en: "Home" },
+    href: "/",
+  },
+  {
     label: { fr: "Conformité", en: "Compliance" },
     href: "/eudr",
     children: [

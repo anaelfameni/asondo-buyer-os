@@ -1,9 +1,10 @@
 "use client";
 
 import { Suspense, useState } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { Lock, Loader2, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Lock, Loader2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { AsondoLogo } from "@/app/components/AsondoLogo";
 
@@ -15,9 +16,27 @@ import { AsondoLogo } from "@/app/components/AsondoLogo";
  */
 export default function ConsoleLoginPage() {
   return (
-    <Suspense fallback={<LoginShellFallback />}>
-      <LoginForm />
-    </Suspense>
+    <>
+      {/* Top-left "back to site" escape hatch. The login layout has
+          no marketing chrome (no navbar, no footer) so this is the
+          only way an unauthenticated visitor can get back to the
+          public site without using the browser's back button — an
+          ergonomic upgrade for stakeholders who land here from a
+          direct link. */}
+      <Link
+        href="/"
+        className="fixed top-6 left-6 z-30 inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 hover:border-white/25 text-white/70 hover:text-white text-sm font-medium backdrop-blur-md transition-colors"
+        aria-label="Retour au site Asondo"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        <span className="hidden sm:inline">Retour à l&apos;accueil</span>
+        <span className="sm:hidden">Accueil</span>
+      </Link>
+
+      <Suspense fallback={<LoginShellFallback />}>
+        <LoginForm />
+      </Suspense>
+    </>
   );
 }
 

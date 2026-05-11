@@ -12,17 +12,20 @@
  *   6. Snapshot to PDF (A4, printBackground, preferCSSPageSize)
  *   7. Stream the buffer as `application/pdf`
  *
- * Browser strategy (puppeteer-core, no bundled Chromium) :
- *   We deliberately use `puppeteer-core` and point it at the Chrome /
- *   Edge already installed on the host. On Windows that's almost
- *   always Microsoft Edge (`msedge.exe`); on macOS / Linux we fall
- *   back to the usual install paths. Set `PUPPETEER_EXECUTABLE_PATH`
- *   to override.
+ * Browser strategy — two runtimes, one code path :
  *
- * Production note (Vercel / serverless) :
- *   Replace the executablePath resolver with `@sparticuz/chromium`
- *   (`chromium.executablePath()`) and pass `chromium.args`. No other
- *   change is needed.
+ *   • Local dev (Windows / macOS / Linux laptop): we reuse Microsoft
+ *     Edge or Google Chrome already installed on the host. Set
+ *     `PUPPETEER_EXECUTABLE_PATH` to override the auto-discovery.
+ *
+ *   • Vercel / AWS Lambda: there is no system Chrome on the function
+ *     filesystem, so we launch `@sparticuz/chromium`'s Lambda-compatible
+ *     Chromium binary instead. This is the canonical workaround for
+ *     serverless headless rendering — `puppeteer-core` provides the
+ *     control protocol, `@sparticuz/chromium` provides the binary.
+ *
+ *   The runtime path is selected by `process.env.VERCEL` (set to "1"
+ *   by Vercel on every deployment and preview).
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -41,26 +44,17 @@ let browserPromise: Promise<Browser> | null = null;
 let lastUsedAt = 0;
 const KEEPALIVE_MS = 30_000;
 
+/**
+ * Truthy when we're running inside a Vercel serverless function (any
+ * environment: production, preview, branch deploys). We don't trust
+ * NODE_ENV here — it's "production" in `next start` on the laptop too,
+ * which is the exact case where we *want* to use the local Chrome path.
+ */
+const IS_VERCEL = process.env.VERCEL === "1" || process.env.VERCEL === "true";
+
 async function getBrowser(): Promise<Browser> {
   if (!browserPromise) {
-    const executablePath = resolveExecutablePath();
-    if (!executablePath) {
-      throw new Error(
-        "No Chrome/Edge executable found. Install Microsoft Edge or Google Chrome, " +
-          "or set PUPPETEER_EXECUTABLE_PATH to a Chromium-compatible binary."
-      );
-    }
-    browserPromise = puppeteer.launch({
-      headless: true,
-      executablePath,
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--font-render-hinting=none",
-        "--disable-gpu",
-      ],
-    });
+    browserPromise = IS_VERCEL ? launchServerless() : launchLocal();
   }
   const browser = await browserPromise;
   lastUsedAt = Date.now();
@@ -73,6 +67,68 @@ async function getBrowser(): Promise<Browser> {
     }
   }, KEEPALIVE_MS + 100);
   return browser;
+}
+
+/**
+ * Vercel / Lambda launch path. We import `@sparticuz/chromium`
+ * dynamically (not at the top of the file) so a missing local install
+ * on a developer's machine doesn't break `next build` for someone who
+ * is not actually deploying — Vercel always installs it via
+ * package.json before the build runs.
+ */
+async function launchServerless(): Promise<Browser> {
+  // The dep is declared in package.json; Vercel installs it during
+  // the build. Hidden behind a runtime conditional + dynamic import
+  // so the module is never touched on a local Windows laptop. The
+  // package ships no types of its own, and marking it as a webpack
+  // external (see next.config.mjs) means TypeScript can't resolve it
+  // either — hence the explicit suppression. The shape below is the
+  // public runtime API documented at https://github.com/Sparticuz/chromium.
+  // @ts-expect-error optional serverless dep, resolved at runtime on Vercel only
+  const mod = (await import("@sparticuz/chromium")) as unknown as {
+    default: {
+      args: string[];
+      executablePath: () => Promise<string>;
+      defaultViewport: { width: number; height: number } | null;
+      setHeadlessMode?: (mode: boolean | "shell") => void;
+    };
+  };
+  const chromium = mod.default ?? (mod as unknown as typeof mod.default);
+
+  return puppeteer.launch({
+    headless: true,
+    args: [
+      ...chromium.args,
+      "--font-render-hinting=none",
+    ],
+    executablePath: await chromium.executablePath(),
+    defaultViewport: chromium.defaultViewport ?? undefined,
+  });
+}
+
+/**
+ * Local development launch path. Reuses an Edge / Chrome / Chromium
+ * binary already installed on the developer's machine.
+ */
+async function launchLocal(): Promise<Browser> {
+  const executablePath = resolveExecutablePath();
+  if (!executablePath) {
+    throw new Error(
+      "No Chrome/Edge executable found. Install Microsoft Edge or Google Chrome, " +
+        "or set PUPPETEER_EXECUTABLE_PATH to a Chromium-compatible binary."
+    );
+  }
+  return puppeteer.launch({
+    headless: true,
+    executablePath,
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--font-render-hinting=none",
+      "--disable-gpu",
+    ],
+  });
 }
 
 /**
