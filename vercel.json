@@ -1,4 +1,16 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "nextjs"
+  "framework": "nextjs",
+
+  "//": "Explicit per-function configuration. Without this block Vercel uses",
+  "// ": "platform defaults (10 s duration on Hobby, 1024 MB memory). The PDF",
+  "//  ": "route launches @sparticuz/chromium which needs a full 60 s budget on",
+  "//   ": "cold start. memory: 1024 is the Hobby maximum — bumping to 3008 would",
+  "//    ": "require Vercel Pro.",
+  "functions": {
+    "app/api/buyer-pack/route.ts": {
+      "maxDuration": 60,
+      "memory": 1024
+    }
+  }
 }

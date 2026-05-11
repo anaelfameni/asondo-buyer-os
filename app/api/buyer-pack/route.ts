@@ -35,8 +35,19 @@ import { rateLimit, getClientIp } from "@/lib/rate-limit";
 import { recordDownload, type PackLang } from "@/lib/buyer-pack-store";
 
 export const runtime = "nodejs";
-// Allow up to 30 s for cold-start Chromium boot + render.
-export const maxDuration = 30;
+// Allow up to 60 s for cold-start Chromium boot + render.
+//
+// Why 60 s
+// --------
+// On a cold Vercel lambda, @sparticuz/chromium has to decompress its
+// ~60 MB tar.br binary from /var/task before Puppeteer can launch.
+// That decompression alone takes 4-8 s on x86 Lambda, and the first
+// `browser.launch()` adds another 2-3 s. Then navigation + render adds
+// another 5-10 s for a 7-page A4 document. So the realistic worst-case
+// total is ~20-25 s, well inside this budget. The 60 s ceiling is
+// available on the Vercel Hobby tier since 2024 and gives us margin if
+// the lambda is very cold or Vercel's egress is throttled.
+export const maxDuration = 60;
 
 /* --------------------------------------------------- Browser singleton */
 
@@ -83,17 +94,62 @@ async function launchServerless(): Promise<Browser> {
   // come from the ambient declaration in `types/sparticuz-chromium.d.ts`,
   // and the package is marked as a webpack external in `next.config.mjs`
   // so Node loads it natively at runtime (only on Vercel, never locally).
-  const mod = await import("@sparticuz/chromium");
-  const chromium = mod.default ?? mod;
+  const t0 = Date.now();
+  let chromium: typeof import("@sparticuz/chromium").default;
+  try {
+    const mod = await import("@sparticuz/chromium");
+    chromium = (mod.default ?? mod) as typeof import("@sparticuz/chromium").default;
+  } catch (err) {
+    console.error(
+      "[/api/buyer-pack] Failed to dynamic-import @sparticuz/chromium. " +
+        "Check that the package is in production dependencies (NOT devDependencies) " +
+        "and that next.config.mjs marks it as a server-only external.",
+      err
+    );
+    throw err;
+  }
 
+  let executablePath: string;
+  try {
+    executablePath = await chromium.executablePath();
+  } catch (err) {
+    console.error(
+      "[/api/buyer-pack] chromium.executablePath() rejected. " +
+        "The Lambda binary failed to decompress — usually means the function " +
+        "ran out of memory or /tmp space. Check Vercel function memory setting.",
+      err
+    );
+    throw err;
+  }
+
+  console.log(
+    `[/api/buyer-pack] Launching @sparticuz/chromium at ${executablePath} ` +
+      `(import+decompress took ${Date.now() - t0} ms)`
+  );
+
+  /*
+   * Args reference: @sparticuz/chromium exposes a curated `args` list
+   * tuned for AWS Lambda / Vercel functions (disables /dev/shm, GPU,
+   * sandbox, etc.). We append two more flags:
+   *   - --font-render-hinting=none: avoid micro-differences in glyph
+   *     positioning between local dev and serverless rendering, so
+   *     designers can preview the PDF on Windows and trust what's
+   *     produced on Vercel.
+   *   - --hide-scrollbars: prevents a stray Chromium scrollbar from
+   *     leaking into the snapshot if a page slightly overflows.
+   */
   return puppeteer.launch({
     headless: true,
     args: [
       ...chromium.args,
       "--font-render-hinting=none",
+      "--hide-scrollbars",
     ],
-    executablePath: await chromium.executablePath(),
+    executablePath,
     defaultViewport: chromium.defaultViewport ?? undefined,
+    // Bound the launch itself so we fail fast instead of consuming the
+    // whole maxDuration budget on a broken binary.
+    timeout: 25_000,
   });
 }
 
@@ -324,9 +380,22 @@ async function renderPdfOnce(
       url.searchParams.set("token", process.env.PRINT_TOKEN);
     }
 
+    /*
+     * `waitUntil: "load"` is intentionally less strict than
+     * `"networkidle0"`. The print route is a static, pre-rendered HTML
+     * document — there are no streaming responses, no analytics
+     * beacons, no chat widgets. Waiting for full network idle adds a
+     * mandatory 500 ms quiet-period at the end, *and* it can hang
+     * indefinitely when a Vercel preview lambda has a long-lived
+     * keep-alive HTTP connection back to the platform. `"load"` fires
+     * as soon as all initial subresources (CSS, fonts inlined by
+     * `next/font`, images) are loaded — exactly what we need before
+     * snapshotting. The fonts.ready handle below is the belt to this
+     * suspenders.
+     */
     const response = await page.goto(url.toString(), {
-      waitUntil: "networkidle0",
-      timeout: 25_000,
+      waitUntil: "load",
+      timeout: 30_000,
     });
 
     if (!response || !response.ok()) {
@@ -336,8 +405,12 @@ async function renderPdfOnce(
     }
 
     // Wait for fonts (Inter + Fraunces) to be applied so glyph metrics
-    // are stable before we snapshot.
-    await page.evaluateHandle("document.fonts.ready");
+    // are stable before we snapshot. Bounded: if `document.fonts` is
+    // unavailable for any reason, we don't want to hang.
+    await Promise.race([
+      page.evaluate(() => document.fonts?.ready ?? Promise.resolve()),
+      new Promise((resolve) => setTimeout(resolve, 3_000)),
+    ]);
 
     const pdf = await page.pdf({
       format: "a4",

@@ -24,23 +24,6 @@
 }
 
 /*
- * Hide the floating PrintTrigger control (auto-print button + helper
- * tooltip) from both the printed PDF and Puppeteer screenshots. The
- * element is anchored bottom-right with `position: fixed` and only
- * exists to drive the on-screen "Save as PDF" workflow — it must never
- * appear inside the actual document.
- */
-.no-print {
-  display: flex;
-}
-
-@media print {
-  .no-print {
-    display: none !important;
-  }
-}
-
-/*
  * Kill every Next.js dev-mode floating UI before Puppeteer takes the
  * snapshot. In `next dev`, the framework injects a <nextjs-portal>
  * custom element that renders the red "1 error" toast, the build

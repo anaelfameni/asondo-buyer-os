@@ -18,59 +18,81 @@ export function SamplePackCTA() {
 
     const toastId = toast.loading(
       locale === "fr"
-        ? "Ouverture du Buyer Pack…"
-        : "Opening Buyer Pack…",
-      { duration: 8_000 }
+        ? "Génération du Buyer Pack en cours…"
+        : "Generating Buyer Pack…",
+      { duration: 60_000 }
     );
 
-    // Track the download attempt server-side BEFORE opening the new
-    // tab. The fetch is fire-and-forget so a slow/failing tracker can
-    // never block the actual PDF flow — the visitor still gets their
-    // document. Persistence lives in `lib/buyer-pack-store.ts` and is
-    // surfaced in the CEO console.
     try {
-      void fetch("/api/buyer-pack-track", {
+      /*
+       * The PDF is rendered server-side by `/api/buyer-pack` using
+       * Puppeteer + @sparticuz/chromium on Vercel (or system Chrome
+       * locally). The response is a binary `application/pdf` blob with
+       * `Content-Disposition: attachment` so we can directly trigger
+       * the browser's "Save File" dialog without ever leaving the
+       * current page. This is the flow the CEO explicitly requested:
+       * one click → real .pdf file on disk.
+       *
+       * The route can take up to ~30 s on a cold Vercel lambda when
+       * @sparticuz/chromium decompresses its binary for the first time,
+       * which is why the toast above gives itself a 60 s budget. The
+       * route itself retries once on transient nav errors.
+       */
+      const res = await fetch("/api/buyer-pack", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ lang: locale, source: "public-cta" }),
-        // Use keepalive so the request survives even if the browser
-        // immediately navigates away (it won't here, since we open in
-        // a new tab — but it's the right semantic).
-        keepalive: true,
-      }).catch(() => {
-        /* swallow — tracking is best effort */
       });
-    } catch {
-      /* network blocked / browser refusing fetch: continue anyway */
+
+      if (!res.ok) {
+        if (res.status === 429) {
+          throw new Error(
+            locale === "fr"
+              ? "Trop de téléchargements depuis votre poste. Réessayez plus tard."
+              : "Too many downloads from your IP. Please try again later."
+          );
+        }
+        throw new Error(
+          locale === "fr"
+            ? "Le serveur n'a pas pu générer le PDF. Réessayez."
+            : "Server failed to generate the PDF. Please try again."
+        );
+      }
+
+      const blob = await res.blob();
+      const filename =
+        extractFilename(res.headers.get("Content-Disposition")) ??
+        `Asondo-Buyer-Pack-${new Date().toISOString().slice(0, 10)}.pdf`;
+
+      // Trigger an actual browser download — same UX as clicking a
+      // direct .pdf link, except the file is freshly rendered.
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+
+      toast.success(
+        locale === "fr"
+          ? "Buyer Pack téléchargé."
+          : "Buyer Pack downloaded.",
+        { id: toastId }
+      );
+    } catch (err) {
+      toast.error(
+        err instanceof Error
+          ? err.message
+          : locale === "fr"
+          ? "Erreur inattendue."
+          : "Unexpected error.",
+        { id: toastId }
+      );
+    } finally {
+      setIsLoading(false);
     }
-
-    /*
-     * New flow (Vercel-safe): open the `/print/buyer-pack` Next.js page
-     * in a new tab. The page renders the same 7-section design that
-     * Puppeteer used to snapshot, and then it auto-triggers the
-     * browser's native print dialog (see PrintTrigger.tsx). The visitor
-     * picks "Save as PDF" as the destination — identical Chromium
-     * rendering, but with zero serverless cold-start risk.
-     */
-    const url = `/print/buyer-pack?lang=${encodeURIComponent(locale)}`;
-    const popup = window.open(url, "_blank", "noopener,noreferrer");
-
-    if (!popup) {
-      // Pop-up blocked → fall back to a same-tab navigation so the
-      // visitor can still reach the document.
-      window.location.href = url;
-    }
-
-    toast.success(
-      locale === "fr"
-        ? "Document ouvert dans un nouvel onglet. Choisissez « Enregistrer au format PDF »."
-        : 'Document opened in a new tab. Choose "Save as PDF" as destination.',
-      { id: toastId }
-    );
-
-    // Brief lock to debounce double clicks; the UI quickly returns to
-    // its default state.
-    window.setTimeout(() => setIsLoading(false), 800);
   };
 
   return (
@@ -172,3 +194,17 @@ export function SamplePackCTA() {
   );
 }
 
+/**
+ * Pulls the filename out of a Content-Disposition header. The server
+ * sets it to `attachment; filename="Asondo-Buyer-Pack-…"`. We don't
+ * trust the client to decide the name (avoids HTML injection).
+ */
+function extractFilename(disposition: string | null): string | null {
+  if (!disposition) return null;
+  const match = /filename\*?="?([^";]+)"?/i.exec(disposition);
+  if (!match) return null;
+  const raw = match[1].trim();
+  // Drop charset prefix like `UTF-8''` if present (RFC 5987).
+  const cleaned = raw.replace(/^[A-Za-z0-9-]+''/, "");
+  return cleaned || null;
+}
