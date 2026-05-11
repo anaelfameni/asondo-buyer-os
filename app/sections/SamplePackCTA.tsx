@@ -18,66 +18,59 @@ export function SamplePackCTA() {
 
     const toastId = toast.loading(
       locale === "fr"
-        ? "Génération du Buyer Pack en cours…"
-        : "Generating Buyer Pack…",
-      { duration: 30_000 }
+        ? "Ouverture du Buyer Pack…"
+        : "Opening Buyer Pack…",
+      { duration: 8_000 }
     );
 
+    // Track the download attempt server-side BEFORE opening the new
+    // tab. The fetch is fire-and-forget so a slow/failing tracker can
+    // never block the actual PDF flow — the visitor still gets their
+    // document. Persistence lives in `lib/buyer-pack-store.ts` and is
+    // surfaced in the CEO console.
     try {
-      const res = await fetch("/api/buyer-pack", {
+      void fetch("/api/buyer-pack-track", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ lang: locale, source: "public-cta" }),
+        // Use keepalive so the request survives even if the browser
+        // immediately navigates away (it won't here, since we open in
+        // a new tab — but it's the right semantic).
+        keepalive: true,
+      }).catch(() => {
+        /* swallow — tracking is best effort */
       });
-
-      if (!res.ok) {
-        if (res.status === 429) {
-          throw new Error(
-            locale === "fr"
-              ? "Trop de téléchargements depuis votre poste. Réessayez plus tard."
-              : "Too many downloads from your IP. Please try again later."
-          );
-        }
-        throw new Error(
-          locale === "fr"
-            ? "Le serveur n'a pas pu générer le PDF. Réessayez."
-            : "Server failed to generate the PDF. Please try again."
-        );
-      }
-
-      const blob = await res.blob();
-      const filename =
-        extractFilename(res.headers.get("Content-Disposition")) ??
-        `Asondo-Buyer-Pack-${new Date().toISOString().slice(0, 10)}.pdf`;
-
-      // Trigger browser download.
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-
-      toast.success(
-        locale === "fr"
-          ? "Buyer Pack téléchargé."
-          : "Buyer Pack downloaded.",
-        { id: toastId }
-      );
-    } catch (err) {
-      toast.error(
-        err instanceof Error
-          ? err.message
-          : locale === "fr"
-          ? "Erreur inattendue."
-          : "Unexpected error.",
-        { id: toastId }
-      );
-    } finally {
-      setIsLoading(false);
+    } catch {
+      /* network blocked / browser refusing fetch: continue anyway */
     }
+
+    /*
+     * New flow (Vercel-safe): open the `/print/buyer-pack` Next.js page
+     * in a new tab. The page renders the same 7-section design that
+     * Puppeteer used to snapshot, and then it auto-triggers the
+     * browser's native print dialog (see PrintTrigger.tsx). The visitor
+     * picks "Save as PDF" as the destination — identical Chromium
+     * rendering, but with zero serverless cold-start risk.
+     */
+    const url = `/print/buyer-pack?lang=${encodeURIComponent(locale)}`;
+    const popup = window.open(url, "_blank", "noopener,noreferrer");
+
+    if (!popup) {
+      // Pop-up blocked → fall back to a same-tab navigation so the
+      // visitor can still reach the document.
+      window.location.href = url;
+    }
+
+    toast.success(
+      locale === "fr"
+        ? "Document ouvert dans un nouvel onglet. Choisissez « Enregistrer au format PDF »."
+        : 'Document opened in a new tab. Choose "Save as PDF" as destination.',
+      { id: toastId }
+    );
+
+    // Brief lock to debounce double clicks; the UI quickly returns to
+    // its default state.
+    window.setTimeout(() => setIsLoading(false), 800);
   };
 
   return (
@@ -179,17 +172,3 @@ export function SamplePackCTA() {
   );
 }
 
-/**
- * Pulls the filename out of a Content-Disposition header. The server
- * sets it to `attachment; filename="Asondo-Buyer-Pack-…"`. We don't
- * trust the client to decide the name (avoids HTML injection).
- */
-function extractFilename(disposition: string | null): string | null {
-  if (!disposition) return null;
-  const match = /filename\*?="?([^";]+)"?/i.exec(disposition);
-  if (!match) return null;
-  const raw = match[1].trim();
-  // Drop charset prefix like `UTF-8''` if present (RFC 5987).
-  const cleaned = raw.replace(/^[A-Za-z0-9-]+''/, "");
-  return cleaned || null;
-}

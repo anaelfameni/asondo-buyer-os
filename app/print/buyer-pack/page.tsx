@@ -14,7 +14,6 @@
  * document with `printBackground: true` and slices via `@page`.
  */
 
-import { notFound } from "next/navigation";
 import { readSettings } from "@/lib/settings-store";
 import { PDF_CONTENT, type PdfLocale } from "@/lib/pdf-content";
 import { renderQrSvg } from "@/lib/qr";
@@ -27,6 +26,7 @@ import { SupplyMap } from "./_components/SupplyMap";
 import { CertChain } from "./_components/CertChain";
 import { CsdddBridge } from "./_components/CsdddBridge";
 import { Closing } from "./_components/Closing";
+import { PrintTrigger } from "./_components/PrintTrigger";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -42,15 +42,15 @@ export default async function BuyerPackPrintPage({
 }: {
   searchParams?: SearchParams;
 }) {
-  const expected = process.env.PRINT_TOKEN;
-  const provided = pickFirst(searchParams?.token);
-  // Token gating: the public web should never reach this URL. The API
-  // route forwards the configured token when launching Puppeteer.
-  // Dev convenience: if PRINT_TOKEN is not set, we allow the route to
-  // render (so you can preview at /print/buyer-pack manually).
-  if (expected && expected !== provided) {
-    notFound();
-  }
+  // This page is now publicly reachable (no token gate) so the visitor
+  // can land on it directly from the home "Télécharger le Sample Pack"
+  // CTA, let their own browser render it, then Save-as-PDF via the
+  // native print dialog. The route is marked `noindex,nofollow` in
+  // `layout.tsx` so it won't appear in search engines. Abuse mitigation
+  // is delegated to per-IP rate-limit when the optional lead tracker
+  // `/api/buyer-pack-track` is called by the client. The Puppeteer
+  // fallback in `/api/buyer-pack` still uses the legacy token gate
+  // because it forwards `PRINT_TOKEN` explicitly.
 
   const lang: PdfLocale = pickFirst(searchParams?.lang) === "fr" ? "fr" : "en";
   const buyer = sanitizeBuyer(pickFirst(searchParams?.buyer));
@@ -185,6 +185,26 @@ export default async function BuyerPackPrintPage({
         contactName={settings.contact.name}
         contactEmail={settings.contact.email}
         contactPhone={settings.contact.phone}
+      />
+
+      {/* On-screen-only auto-print orchestrator. Hidden from the actual
+          PDF / Puppeteer snapshot via the `.no-print` rule in styles.css. */}
+      <PrintTrigger
+        buttonLabel={
+          lang === "fr"
+            ? "Ouvrir la fenêtre d'impression"
+            : "Open the print dialog"
+        }
+        helperText={
+          lang === "fr"
+            ? "Sélectionnez « Enregistrer au format PDF » comme destination dans la fenêtre d'impression, puis cliquez sur Enregistrer."
+            : 'Choose "Save as PDF" as the destination in the print dialog, then click Save.'
+        }
+        closeLabel={
+          lang === "fr"
+            ? "Document prêt. Vous pouvez fermer cet onglet."
+            : "Document ready. You can close this tab."
+        }
       />
     </main>
   );

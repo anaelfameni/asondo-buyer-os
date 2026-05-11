@@ -97,6 +97,23 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" className={inter.variable}>
+      <head>
+        {/*
+         * Preload the hero photograph used by the home HeroBanner, the
+         * PageHero on every dedicated page, and the LegalShell on every
+         * legal/EUDR-deep page. Without this, the image starts loading
+         * only after React hydration on slow network paths, leaving the
+         * green overlay floating on cream for a beat. Preloading it
+         * here moves the fetch into the HTML critical path so the LCP
+         * candidate is ready when the hero paints.
+         */}
+        <link
+          rel="preload"
+          as="image"
+          href="/backgroundhero.jpg"
+          fetchPriority="high"
+        />
+      </head>
       <body className={`${inter.className} antialiased bg-[#FDFBF7] text-[#1A1A1A]`}>
         {/*
          * Server-rendered initial splash. Sits as a sibling of the

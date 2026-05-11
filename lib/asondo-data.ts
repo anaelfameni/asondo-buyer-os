@@ -77,8 +77,11 @@ export const asondoData = {
    */
   leadership: {
     ceoName: "Ludovic M'bahia Blé",
-    ceoRole: "Président-Directeur Général",
-    ceoRoleEn: "Chairman & Chief Executive Officer (PDG)",
+    ceoRole: "Fondateur & Président-Directeur Général",
+    ceoRoleEn: "Founder & Chairman-CEO",
+    /** Short variant used when context already says "leadership". */
+    ceoRoleShort: "Fondateur & PDG",
+    ceoRoleShortEn: "Founder & CEO",
     /**
      * Compliance Officer EUDR : nomination interne, communiquée
      * nominativement aux acheteurs sous Buyer Pack / NDA. Pas de

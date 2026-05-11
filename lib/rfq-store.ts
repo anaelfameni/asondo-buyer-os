@@ -1,14 +1,24 @@
 /**
- * Demo-grade RFQ (Request For Quote) lead store.
+ * RFQ (Request For Quote) lead store — adaptive backend.
  *
- * Stores leads in a JSON file under `<project>/data/rfq-leads.json`.
- * Each write is atomic (write to .tmp then rename). Adequate for a single
- * Node.js process serving the demo. NOT safe across multiple concurrent
- * processes or across Vercel serverless instances — for production,
- * swap the read/write helpers for a real database (Supabase, Vercel KV…).
+ * Decides at call time which persistence backend to use:
+ *
+ *   1. Supabase Postgres, when `SUPABASE_URL` and
+ *      `SUPABASE_SERVICE_ROLE_KEY` are both set in the runtime env.
+ *      This is the production path on Vercel, where the local
+ *      filesystem is read-only and ephemeral, so previous file-based
+ *      writes were lost between invocations.
+ *
+ *   2. Local JSON file under `<project>/data/rfq-leads.json`, when
+ *      Supabase env vars are absent. Each write is atomic (write to
+ *      .tmp then rename). Adequate for `pnpm dev` on a developer
+ *      laptop. Same shape, same return values — the API routes and
+ *      the CEO console don't see which backend was used.
  *
  * The shape of a lead matches the public RFQ form fields plus admin-only
- * metadata (id, createdAt, status, notes).
+ * metadata (id, createdAt, status, notes). The Supabase backend keeps
+ * its rows snake_cased (`created_at`, `updated_at`, …) at rest and
+ * does the camel ↔ snake mapping internally in `rfq-store-supabase.ts`.
  */
 
 import "server-only";
@@ -21,6 +31,13 @@ import {
   type RfqStatus,
   type RfqValidationResult,
 } from "./rfq-types";
+import {
+  countLeadsByStatusSupabase,
+  createLeadSupabase,
+  isSupabaseConfigured,
+  listLeadsSupabase,
+  updateLeadSupabase,
+} from "./rfq-store-supabase";
 
 // Re-export so existing server-side imports (API routes, server components)
 // keep working unchanged. Client components must import from `./rfq-types`.
@@ -115,7 +132,19 @@ export function validateRfqInput(raw: unknown): RfqValidationResult {
 
 /* -------------------------------------------------------- API --------- */
 
+/**
+ * Returns which backend is currently in use. Helpful in admin UI to
+ * surface "running on Supabase" vs "running on local JSON" so the
+ * operator never wonders why prod data isn't visible in dev.
+ */
+export function getActiveBackend(): "supabase" | "file" {
+  return isSupabaseConfigured() ? "supabase" : "file";
+}
+
 export async function listLeads(): Promise<RfqLead[]> {
+  if (isSupabaseConfigured()) {
+    return listLeadsSupabase();
+  }
   const data = await readFile();
   // Most recent first.
   return data.leads
@@ -124,6 +153,9 @@ export async function listLeads(): Promise<RfqLead[]> {
 }
 
 export async function createLead(input: RfqInput): Promise<RfqLead> {
+  if (isSupabaseConfigured()) {
+    return createLeadSupabase(input);
+  }
   const data = await readFile();
   const now = new Date().toISOString();
   const lead: RfqLead = {
@@ -144,6 +176,9 @@ export async function updateLead(
   id: string,
   patch: Partial<Pick<RfqLead, "status" | "notes">>
 ): Promise<RfqLead | null> {
+  if (isSupabaseConfigured()) {
+    return updateLeadSupabase(id, patch);
+  }
   const data = await readFile();
   const idx = data.leads.findIndex((l) => l.id === id);
   if (idx === -1) return null;
@@ -164,6 +199,9 @@ export async function updateLead(
 }
 
 export async function countLeadsByStatus(): Promise<Record<RfqStatus, number>> {
+  if (isSupabaseConfigured()) {
+    return countLeadsByStatusSupabase();
+  }
   const leads = await listLeads();
   const counts: Record<RfqStatus, number> = {
     new: 0,

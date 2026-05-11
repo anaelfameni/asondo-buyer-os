@@ -53,8 +53,8 @@ const ROLES: Role[] = [
     },
     status: { fr: "En fonction", en: "In office" },
     description: {
-      fr: "Représentant légal de ASONDO SA. Direction générale et engagement de la société dans la filière cacao ivoirienne durable, avec 15 ans d'expérience dans le négoce de matières premières et la supply chain (cf. asondo.ci/our-story).",
-      en: "Legal representative of ASONDO SA. Chief executive of the company and its commitment to a sustainable Ivorian cocoa sector, with 15 years of soft-commodity trading and supply-chain experience (cf. asondo.ci/our-story).",
+      fr: "Fondateur et représentant légal de ASONDO SA. Il a fondé la société et en assure la Direction Générale, portant l'engagement d'Asondo dans la filière cacao ivoirienne durable, avec 15 ans d'expérience dans le négoce de matières premières et la supply chain (cf. asondo.ci/our-story).",
+      en: "Founder and legal representative of ASONDO SA. He founded the company and runs it as Chairman-CEO, carrying Asondo's commitment to a sustainable Ivorian cocoa sector, with 15 years of soft-commodity trading and supply-chain experience (cf. asondo.ci/our-story).",
     },
     badgeColor: "#1F3D2F",
   },

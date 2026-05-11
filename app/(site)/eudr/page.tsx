@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, ShieldCheck, FileSignature, UserCog } from "lucide-react";
-import { PageHero } from "@/app/components/PageHero";
 import { TrackRecordBanner } from "@/app/components/TrackRecordBanner";
 import { EvidenceMatrix } from "@/app/sections/EvidenceMatrix";
+import { EudrHero } from "./_components/EudrHero";
 
 export const metadata: Metadata = {
   title: "Conformité EUDR — Matrice de preuves Asondo",
@@ -21,31 +21,8 @@ export const metadata: Metadata = {
 export default function EudrPage() {
   return (
     <main>
-      <PageHero
-        eyebrow="EUDR · Règlement UE 2023/1115"
-        title="Notre conformité EUDR, en clair."
-        subtitle="Asondo aligne sa chaîne d'approvisionnement avec les exigences du Règlement européen sur la déforestation. Cette page rassemble nos preuves publiques, l'identité de notre Compliance Officer, et le modèle de Déclaration de Diligence Raisonnée (DDS) que nous soumettons à chaque expédition."
-        breadcrumbs={[{ label: "Conformité EUDR" }]}
-        cta={
-          <>
-            <Link
-              href="/eudr/compliance-officer"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-[#D06B1F] text-white font-semibold text-sm hover:bg-[#A85318] transition-colors shadow-lg shadow-[#D06B1F]/25"
-            >
-              <UserCog className="w-4 h-4" />
-              Voir le Compliance Officer
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-            <Link
-              href="/eudr/due-diligence-statement"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-white border border-[#E8833D]/40 text-[#D06B1F] font-semibold text-sm hover:bg-[#FEF3E7] transition-colors"
-            >
-              <FileSignature className="w-4 h-4" />
-              Modèle de DDS
-            </Link>
-          </>
-        }
-      />
+      {/* Localised hero — picks fr/en based on user toggle */}
+      <EudrHero />
 
       {/* Evidence matrix — main signal */}
       <EvidenceMatrix />
