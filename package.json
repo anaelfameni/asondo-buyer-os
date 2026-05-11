@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "start:local": "next build && next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "gen-pdf": "next build && node scripts/generate-static-buyer-pack-pdfs.mjs"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

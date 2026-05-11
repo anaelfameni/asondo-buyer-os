@@ -12,87 +12,54 @@ export function SamplePackCTA() {
   const { t, locale } = useI18n();
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleDownload = async () => {
+  const handleDownload = () => {
     if (isLoading) return;
     setIsLoading(true);
 
-    const toastId = toast.loading(
+    /*
+     * Production-grade Buyer Pack flow.
+     *
+     * The PDF is pre-rendered at development time by
+     * `scripts/generate-static-buyer-pack-pdfs.mjs` and committed under
+     * `public/Asondo-Buyer-Pack-FR.pdf` + `public/Asondo-Buyer-Pack-EN.pdf`.
+     * Serving it as a plain static asset means:
+     *
+     *   - One click, real .pdf file on disk, no spinner anyone will
+     *     remember waiting on.
+     *   - Vercel's CDN handles the bytes; our serverless functions
+     *     never wake up for downloads → no cold-start risk, no timeout,
+     *     no @sparticuz/chromium decompression, no OOM kill.
+     *   - The asset is cached at the edge so a second visitor in the
+     *     same region downloads in <100 ms.
+     *
+     * The dynamic Puppeteer endpoint at `/api/buyer-pack` is kept in
+     * place for the CEO console "Send Pack" feature, which still wants
+     * a buyer-specific PDF (different cover name, different filename).
+     * That code path is low-traffic, used by operators who can retry
+     * if the lambda has a hiccup — exactly the trade-off we want.
+     */
+    const filename =
       locale === "fr"
-        ? "Génération du Buyer Pack en cours…"
-        : "Generating Buyer Pack…",
-      { duration: 60_000 }
+        ? "Asondo-Buyer-Pack-FR.pdf"
+        : "Asondo-Buyer-Pack-EN.pdf";
+
+    const a = document.createElement("a");
+    a.href = `/${filename}`;
+    a.download = filename;
+    a.rel = "noopener";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    toast.success(
+      locale === "fr"
+        ? "Buyer Pack téléchargé."
+        : "Buyer Pack downloaded.",
+      { duration: 4_000 }
     );
 
-    try {
-      /*
-       * The PDF is rendered server-side by `/api/buyer-pack` using
-       * Puppeteer + @sparticuz/chromium on Vercel (or system Chrome
-       * locally). The response is a binary `application/pdf` blob with
-       * `Content-Disposition: attachment` so we can directly trigger
-       * the browser's "Save File" dialog without ever leaving the
-       * current page. This is the flow the CEO explicitly requested:
-       * one click → real .pdf file on disk.
-       *
-       * The route can take up to ~30 s on a cold Vercel lambda when
-       * @sparticuz/chromium decompresses its binary for the first time,
-       * which is why the toast above gives itself a 60 s budget. The
-       * route itself retries once on transient nav errors.
-       */
-      const res = await fetch("/api/buyer-pack", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ lang: locale, source: "public-cta" }),
-      });
-
-      if (!res.ok) {
-        if (res.status === 429) {
-          throw new Error(
-            locale === "fr"
-              ? "Trop de téléchargements depuis votre poste. Réessayez plus tard."
-              : "Too many downloads from your IP. Please try again later."
-          );
-        }
-        throw new Error(
-          locale === "fr"
-            ? "Le serveur n'a pas pu générer le PDF. Réessayez."
-            : "Server failed to generate the PDF. Please try again."
-        );
-      }
-
-      const blob = await res.blob();
-      const filename =
-        extractFilename(res.headers.get("Content-Disposition")) ??
-        `Asondo-Buyer-Pack-${new Date().toISOString().slice(0, 10)}.pdf`;
-
-      // Trigger an actual browser download — same UX as clicking a
-      // direct .pdf link, except the file is freshly rendered.
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-
-      toast.success(
-        locale === "fr"
-          ? "Buyer Pack téléchargé."
-          : "Buyer Pack downloaded.",
-        { id: toastId }
-      );
-    } catch (err) {
-      toast.error(
-        err instanceof Error
-          ? err.message
-          : locale === "fr"
-          ? "Erreur inattendue."
-          : "Unexpected error.",
-        { id: toastId }
-      );
-    } finally {
-      setIsLoading(false);
-    }
+    // Debounce repeated clicks — the actual download is already running.
+    window.setTimeout(() => setIsLoading(false), 600);
   };
 
   return (
@@ -179,8 +146,8 @@ export function SamplePackCTA() {
               )}
               {isLoading
                 ? locale === "fr"
-                  ? "Génération en cours…"
-                  : "Generating…"
+                  ? "Téléchargement…"
+                  : "Downloading…"
                 : t.sample.download}
             </button>
 
@@ -194,17 +161,3 @@ export function SamplePackCTA() {
   );
 }
 
-/**
- * Pulls the filename out of a Content-Disposition header. The server
- * sets it to `attachment; filename="Asondo-Buyer-Pack-…"`. We don't
- * trust the client to decide the name (avoids HTML injection).
- */
-function extractFilename(disposition: string | null): string | null {
-  if (!disposition) return null;
-  const match = /filename\*?="?([^";]+)"?/i.exec(disposition);
-  if (!match) return null;
-  const raw = match[1].trim();
-  // Drop charset prefix like `UTF-8''` if present (RFC 5987).
-  const cleaned = raw.replace(/^[A-Za-z0-9-]+''/, "");
-  return cleaned || null;
-}
