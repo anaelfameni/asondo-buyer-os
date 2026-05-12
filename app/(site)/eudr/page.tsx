@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, ShieldCheck, FileSignature, UserCog } from "lucide-react";
 import { TrackRecordBanner } from "@/app/components/TrackRecordBanner";
 import { EvidenceMatrix } from "@/app/sections/EvidenceMatrix";
+import { SamplePackCTA } from "@/app/sections/SamplePackCTA";
 import { EudrHero } from "./_components/EudrHero";
 
 export const metadata: Metadata = {
@@ -26,6 +27,13 @@ export default function EudrPage() {
 
       {/* Evidence matrix — main signal */}
       <EvidenceMatrix />
+
+      {/* Buyer Assurance Pack download.
+          Sits between the evidence matrix and the live operational
+          status, giving any buyer who just scanned the 4-pillar
+          compliance summary an immediate way to pull the printable
+          dossier before reading the real-time campaign status. */}
+      <SamplePackCTA />
 
       {/* Honest, real-time status of the EUDR ramp-up */}
       <TrackRecordBanner />

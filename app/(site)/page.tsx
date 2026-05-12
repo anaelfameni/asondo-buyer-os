@@ -13,8 +13,15 @@ export default function Home() {
       <EvidenceMatrix />
       <SupplyMap />
       <ProgrammeDashboard />
-      <AICopilot />
+      {/*
+       * SamplePackCTA (Buyer Assurance Pack download) intentionally
+       * sits BEFORE the AI assistant. A buyer who has just scrolled
+       * through the Evidence Matrix and the programme is at peak
+       * conversion intent — we want the big orange PDF button in
+       * view before we offer the Q&A fallback.
+       */}
       <SamplePackCTA />
+      <AICopilot />
       {/* Homepage RFQ teaser. The actual form lives on /contact only. */}
       <HomeRFQTeaser />
     </main>

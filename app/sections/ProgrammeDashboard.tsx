@@ -6,6 +6,7 @@ import { asondoData } from "@/lib/asondo-data";
 import { useI18n } from "@/lib/i18n-context";
 import { AnimatedSection } from "@/app/components/AnimatedSection";
 import { AnimatedCounter } from "@/app/components/AnimatedCounter";
+import Link from "next/link";
 import { CheckCircle2, ChevronDown, ArrowRight, MapPin, TreePine, TrendingUp, Wallet } from "lucide-react";
 
 const pillarConfig: Record<string, { grad: string; ring: string; icon: React.ElementType }> = {
@@ -166,13 +167,19 @@ export function ProgrammeDashboard() {
 
         <AnimatedSection delay={0.3} className="text-center mt-14">
           <p className="text-[#6B7280] mb-5">{t.programme.mappingQuestion}</p>
-          <a
-            href="#evidence-matrix"
+          {/* Route to the full /eudr page. The dashboard is reused
+              on both the homepage (where an in-page `#evidence-matrix`
+              anchor exists) and on /programme (where it does NOT),
+              so anchoring to #evidence-matrix was silently no-op on
+              /programme. /eudr is the canonical destination for the
+              full EUDR evidence matrix anyway. */}
+          <Link
+            href="/eudr"
             className="group inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white border-2 border-[#E8833D] text-[#D06B1F] font-semibold hover:bg-[#E8833D] hover:text-white transition-all shadow-sm"
           >
             {t.programme.viewMatrix}
             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-          </a>
+          </Link>
         </AnimatedSection>
       </div>
     </section>
