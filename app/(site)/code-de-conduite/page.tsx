@@ -21,6 +21,7 @@ export default function CodeOfConductPage() {
           : "Ethical, environmental and social commitments shared by ASONDO SA and all its partner cooperatives. Signing this code is a prerequisite for joining the Asondo network."
       }
       lastUpdated="2026-05-11"
+      bgPhoto="/photo4.jpg"
     >
       <h2>{fr ? "1. Préambule" : "1. Preamble"}</h2>
       <p>

@@ -18,6 +18,7 @@ export default function MentionsLegalesPage() {
           : "Identification of the publisher of asondo.ci, in compliance with applicable Ivorian and European Union obligations."
       }
       lastUpdated="2026-05-11"
+      bgPhoto="/photo2.jpg"
     >
       <h2>{fr ? "1. Éditeur du site" : "1. Site publisher"}</h2>
       <p>

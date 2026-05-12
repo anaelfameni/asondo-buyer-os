@@ -22,6 +22,7 @@ export default function DDSPage() {
           : "Template of the statement submitted by Asondo to the EUDR information system for each shipment to the European Union. Values marked “to be filled” are populated per shipment."
       }
       lastUpdated="2026-05-11"
+      bgPhoto="/photo4.jpg"
     >
       <blockquote>
         {fr

@@ -11,6 +11,7 @@ import {
   Users,
 } from "lucide-react";
 import { PageHero } from "@/app/components/PageHero";
+import { SectionBackground } from "@/app/components/SectionBackground";
 import { useI18n } from "@/lib/i18n-context";
 import { asondoData } from "@/lib/asondo-data";
 
@@ -119,8 +120,13 @@ export default function EquipePage() {
       />
 
       {/* Roles grid */}
-      <section className="py-16 sm:py-20 bg-[#FDFBF7]">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative py-16 sm:py-20 bg-[#FDFBF7] overflow-hidden">
+        {/* Drying-rack photo behind the team grid — same image used on
+            the Evidence Matrix, communicating discipline and quality
+            standards behind the people we list. */}
+        <SectionBackground src="/photo3.jpg" />
+
+        <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {ROLES.map((role, i) => {
               const Icon = role.icon;

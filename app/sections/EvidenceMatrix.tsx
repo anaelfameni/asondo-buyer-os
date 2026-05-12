@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { asondoData, type EudrStatus } from "@/lib/asondo-data";
 import { useI18n } from "@/lib/i18n-context";
 import { AnimatedSection, StaggerContainer, AnimatedItem } from "@/app/components/AnimatedSection";
+import { SectionBackground } from "@/app/components/SectionBackground";
 import {
   ShieldCheck,
   AlertTriangle,
@@ -44,6 +45,10 @@ export function EvidenceMatrix() {
       id="evidence-matrix"
       className="relative py-24 lg:py-32 bg-[#FDFBF7] overflow-hidden"
     >
+      {/* Editorial cocoa-drying photo behind the matrix — visual proof
+          of the very pillars (traceability, quality) the cards list. */}
+      <SectionBackground src="/photo3.jpg" position="top" />
+
       <div className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full bg-[#F4A866]/10 blur-3xl pointer-events-none" />
       <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] rounded-full bg-[#1F3D2F]/5 blur-3xl pointer-events-none" />
 

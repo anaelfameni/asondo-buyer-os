@@ -17,6 +17,7 @@ export default function PrivacyPage() {
           : "How ASONDO SA collects, uses and protects your data. GDPR-compliant (EU 2016/679) and aligned with Ivorian Law No. 2013-450 on personal-data protection."
       }
       lastUpdated="2026-05-11"
+      bgPhoto="/photo1.jpg"
     >
       <h2>{fr ? "1. Responsable de traitement" : "1. Data controller"}</h2>
       <p>
