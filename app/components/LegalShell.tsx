@@ -131,10 +131,10 @@ export function LegalShell({
       {/* Content */}
       <section className="relative py-16 sm:py-20 overflow-hidden">
         {bgPhoto ? (
-          /* Slightly heavier cream tint than the rest of the site
-             (~0.75 vs 0.60 default) so the photo stays present but
-             dense legal-prose paragraphs remain comfortably readable. */
-          <SectionBackground src={bgPhoto} tint={0.75} />
+          /* Extra cream veil on top of the brand gradient so the dense
+             legal-prose paragraphs remain readable while still picking
+             up the orange/green Asondo identity. */
+          <SectionBackground src={bgPhoto} tint={0.55} />
         ) : null}
         <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto legal-prose">

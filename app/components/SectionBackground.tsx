@@ -4,23 +4,25 @@ import Image from "next/image";
  * Editorial-style background image for content sections.
  *
  * Used to layer one of the brand photographs (`/photo1.jpg` … `/photo5.jpg`)
- * behind a `<section>` without competing with the section's text or the
- * orange brand identity. The hero of every page is intentionally left
+ * behind a `<section>` with the **same green → burnt-orange → light-orange
+ * overlay as the home `HeroBanner` and `PageHero`** so every section reads
+ * as part of the unified Asondo identity. Heroes themselves stay
  * untouched — backgrounds only appear in body sections.
  *
  * How it stacks
  * -------------
  * Inside the parent `<section>` (which must be `relative` and
- * `overflow-hidden`), this component renders three layers at `z-0`:
+ * `overflow-hidden`), this component renders four layers at `z-0`:
  *
- *   1. The photograph itself (`object-cover`, `priority={false}` so it
- *      never competes with the LCP hero).
- *   2. A solid tint at high opacity so the page reads as part of the
- *      Asondo identity, not a stock photo. The tint colour matches the
- *      section's surrounding background (`#FDFBF7` cream by default,
- *      `#1F3D2F` for the dark-green CTAs).
- *   3. A vertical fade in the same colour so the photo edge never
- *      collides hard with neighbouring sections.
+ *   1. The photograph itself (`object-cover`, `priority={false}`).
+ *   2. The Asondo signature gradient overlay
+ *      (`from-[#1F3D2F]/85 via-[#D06B1F]/65 to-[#E8833D]/50`) — same
+ *      colours and stops as `PageHero`.
+ *   3. An optional extra cream/dark tint controlled by `tint`. Used by
+ *      `LegalShell` to soften the gradient further on text-dense
+ *      legal-prose pages.
+ *   4. A top/bottom cream/dark fade so the section never collides hard
+ *      with neighbouring sections.
  *
  * Section authors are responsible for keeping their own content above
  * this background. Any positive `z-` works; the existing decorative
@@ -31,21 +33,23 @@ export function SectionBackground({
   src,
   alt = "",
   variant = "cream",
-  tint,
+  tint = 0,
   position = "center",
 }: {
   src: string;
   alt?: string;
   /**
-   * Tint preset matching the surrounding section background. `cream`
+   * Fade preset matching the surrounding section background. `cream`
    * is the default Asondo body colour (`#FDFBF7`). `dark` matches the
-   * deep-green CTAs (`#1F3D2F`).
+   * deep-green CTAs (`#1F3D2F`). Only affects the top/bottom fade —
+   * the main overlay is the brand gradient regardless.
    */
   variant?: "cream" | "dark";
   /**
-   * Optional override for the tint opacity (0..1). Higher values fade
-   * the photo more. Defaults are tuned per variant to keep text
-   * readable without removing the photographic atmosphere.
+   * Optional extra cream/dark veil on top of the brand gradient (0..1).
+   * 0 = brand gradient only (default, full Asondo orange/green look).
+   * Use a positive value (e.g. 0.4) on text-dense legal pages to mute
+   * the saturation and keep paragraph copy easy to read.
    */
   tint?: number;
   /**
@@ -62,12 +66,8 @@ export function SectionBackground({
       ? "object-bottom"
       : "object-center";
 
-  const tintColor = variant === "dark" ? "31, 61, 47" : "253, 251, 247";
-  // Default tints tuned so the photograph is ~40% visible (tint ~0.60).
-  // The photo reads as a clearly intentional editorial backdrop
-  // without overpowering titles, cards and orange CTAs.
-  const tintAlpha = tint ?? (variant === "dark" ? 0.6 : 0.6);
   const fadeStop = variant === "dark" ? "#0F2619" : "#FDFBF7";
+  const veilColor = variant === "dark" ? "31, 61, 47" : "253, 251, 247";
 
   return (
     <div aria-hidden className="absolute inset-0 z-0 pointer-events-none">
@@ -76,18 +76,27 @@ export function SectionBackground({
         alt={alt}
         fill
         sizes="100vw"
-        // Bumped from 70 to 85 now that the photo is ~75% visible:
-        // JPEG compression artifacts would be obvious on cocoa-bean
-        // close-ups at the previous quality setting.
+        // 85 keeps the cocoa-bean / pod close-ups crisp now that the
+        // photograph is clearly visible behind the brand gradient.
         quality={85}
         className={`object-cover ${objectPosition}`}
       />
 
-      <div
-        className="absolute inset-0"
-        style={{ backgroundColor: `rgba(${tintColor}, ${tintAlpha})` }}
-      />
+      {/* Asondo signature green → burnt-orange → light-orange gradient,
+          identical to the home HeroBanner / PageHero overlay so every
+          section reads as part of the same brand identity. */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#1F3D2F]/85 via-[#D06B1F]/65 to-[#E8833D]/50" />
 
+      {/* Optional extra cream/dark veil for text-dense pages. */}
+      {tint > 0 ? (
+        <div
+          className="absolute inset-0"
+          style={{ backgroundColor: `rgba(${veilColor}, ${tint})` }}
+        />
+      ) : null}
+
+      {/* Top + bottom fade into the surrounding section colour so the
+          photograph never has a hard edge against neighbouring content. */}
       <div
         className="absolute inset-0"
         style={{
