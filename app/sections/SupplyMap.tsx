@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { asondoData } from "@/lib/asondo-data";
 import { useI18n } from "@/lib/i18n-context";
 import { AnimatedSection } from "@/app/components/AnimatedSection";
-import { SectionBackground } from "@/app/components/SectionBackground";
 import { Building2, Trees, Phone, Mail, Globe } from "lucide-react";
 
 // Dynamic import to avoid SSR issues with Leaflet
@@ -34,10 +33,6 @@ export function SupplyMap() {
       id="supply-map"
       className="relative py-24 lg:py-32 bg-white overflow-hidden"
     >
-      {/* A real producer on a real Ivorian forest road — what "Réseau
-          d'approvisionnement" actually looks like on the ground. */}
-      <SectionBackground src="/photo2.jpg" />
-
       <div className="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-[#FEF3E7] blur-3xl opacity-60 pointer-events-none" />
       <div className="absolute -bottom-32 -right-32 w-[500px] h-[500px] rounded-full bg-[#1F3D2F]/5 blur-3xl pointer-events-none" />
 

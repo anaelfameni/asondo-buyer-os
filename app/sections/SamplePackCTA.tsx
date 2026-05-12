@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useI18n } from "@/lib/i18n-context";
 import { AnimatedSection } from "@/app/components/AnimatedSection";
-import { SectionBackground } from "@/app/components/SectionBackground";
 import { Download, CheckCircle2, Loader2 } from "lucide-react";
 import { AsondoMark } from "../components/AsondoLogo";
 
@@ -65,12 +64,6 @@ export function SamplePackCTA() {
 
   return (
     <section className="relative py-24 lg:py-32 overflow-hidden bg-gradient-to-br from-[#1F3D2F] via-[#163024] to-[#0F2619]">
-      {/* Close-up of dried Asondo cocoa beans in a producer's hand —
-          this is exactly the product the visitor is about to download
-          a sample brief for. Dark variant so the green-gradient
-          identity stays dominant. */}
-      <SectionBackground src="/photo1.jpg" variant="dark" />
-
       {/* Background pattern */}
       <div className="absolute inset-0 opacity-5">
         <svg width="100%" height="100%">

@@ -8,7 +8,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useI18n } from "@/lib/i18n-context";
 import { AnimatedSection } from "@/app/components/AnimatedSection";
-import { SectionBackground } from "@/app/components/SectionBackground";
 import { Send, CheckCircle2, Clock, FileText, Package, MapPin, Building2, User, Mail as MailIcon, Loader2 } from "lucide-react";
 
 export function RFQForm() {
@@ -89,10 +88,6 @@ export function RFQForm() {
 
   return (
     <section id="rfq-form" className="relative py-24 lg:py-32 overflow-hidden bg-gradient-to-br from-[#FEF3E7] via-[#FDFBF7] to-[#F4A866]/20">
-      {/* Cocoa-pod harvest pile — visual cue for "we already have the
-          inventory ready, ask for your quote". */}
-      <SectionBackground src="/photo5.jpg" />
-
       {/* Decorative orbs */}
       <div className="absolute top-10 left-10 w-80 h-80 bg-[#F4A866]/30 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-10 right-10 w-80 h-80 bg-[#F2B83E]/30 rounded-full blur-3xl pointer-events-none" />

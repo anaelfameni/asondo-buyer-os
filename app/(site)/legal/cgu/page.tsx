@@ -19,7 +19,6 @@ export default function CguPage() {
           : "Rules applicable to any consultation and use of asondo.ci."
       }
       lastUpdated="2026-05-11"
-      bgPhoto="/photo5.jpg"
     >
       <h2>{fr ? "1. Objet" : "1. Purpose"}</h2>
       <p>

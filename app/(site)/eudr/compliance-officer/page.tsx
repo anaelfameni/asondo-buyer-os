@@ -22,7 +22,6 @@ export default function ComplianceOfficerPage() {
           : "Identification and mission of the Asondo due-diligence system officer, in accordance with Article 4 of Regulation (EU) 2023/1115."
       }
       lastUpdated="2026-05-11"
-      bgPhoto="/photo3.jpg"
     >
       <h2>{fr ? "1. Cadre réglementaire" : "1. Regulatory framework"}</h2>
       <p>

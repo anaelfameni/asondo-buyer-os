@@ -6,7 +6,6 @@ import { asondoData } from "@/lib/asondo-data";
 import { useI18n } from "@/lib/i18n-context";
 import { AnimatedSection } from "@/app/components/AnimatedSection";
 import { AnimatedCounter } from "@/app/components/AnimatedCounter";
-import { SectionBackground } from "@/app/components/SectionBackground";
 import { CheckCircle2, ChevronDown, ArrowRight, MapPin, TreePine, TrendingUp, Wallet } from "lucide-react";
 
 const pillarConfig: Record<string, { grad: string; ring: string; icon: React.ElementType }> = {
@@ -25,10 +24,6 @@ export function ProgrammeDashboard() {
 
   return (
     <section id="programme" className="relative py-24 lg:py-32 bg-[#FDFBF7] overflow-hidden">
-      {/* Living cocoa pods on the tree — the start of the value chain
-          this programme is built around. */}
-      <SectionBackground src="/photo4.jpg" />
-
       {/* Decorative gradient blobs */}
       <div className="absolute top-20 right-10 w-96 h-96 bg-[#FEF3E7] rounded-full blur-3xl opacity-70 pointer-events-none" />
       <div className="absolute bottom-20 left-10 w-96 h-96 bg-[#F4A866]/20 rounded-full blur-3xl pointer-events-none" />

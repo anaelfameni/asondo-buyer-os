@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, FileText } from "lucide-react";
 import { useI18n } from "@/lib/i18n-context";
-import { SectionBackground } from "./SectionBackground";
 
 /**
  * Shared chrome for legal / EUDR-deep content pages.
@@ -25,15 +24,6 @@ export function LegalShell({
   title,
   subtitle,
   lastUpdated,
-  /**
-   * Optional path to an Asondo brand photograph (e.g. `/photo4.jpg`)
-   * rendered as a very faint background behind the legal-prose body
-   * section. Heavily tinted (`tint=0.93`) so the dense legal text
-   * remains fully readable — the photo only adds a subtle warm
-   * texture so the page reads as part of the site's identity instead
-   * of a sterile policy document.
-   */
-  bgPhoto,
   children,
 }: {
   eyebrow?: string;
@@ -41,7 +31,6 @@ export function LegalShell({
   subtitle?: string;
   /** Free-form string already localised by the caller. */
   lastUpdated?: string;
-  bgPhoto?: string;
   children: React.ReactNode;
 }) {
   const { locale } = useI18n();
@@ -129,14 +118,8 @@ export function LegalShell({
       </section>
 
       {/* Content */}
-      <section className="relative py-16 sm:py-20 overflow-hidden">
-        {bgPhoto ? (
-          /* Extra cream veil on top of the brand gradient so the dense
-             legal-prose paragraphs remain readable while still picking
-             up the orange/green Asondo identity. */
-          <SectionBackground src={bgPhoto} tint={0.55} />
-        ) : null}
-        <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-16 sm:py-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto legal-prose">
             {children}
           </div>
