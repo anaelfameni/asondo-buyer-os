@@ -32,6 +32,7 @@ export function PageHero({
   cta,
   bgImage = "/backgroundhero.jpg",
   bgPosition = "center",
+  bgPositionClassName,
 }: {
   eyebrow?: string;
   title: string;
@@ -47,17 +48,45 @@ export function PageHero({
    */
   bgImage?: string;
   /**
-   * `object-position` value for the background `<Image>`. Defaults
-   * to `center`. `/reseau` overrides this with `"top"` so the cocoa
+   * `object-position` value for the background `<Image>` on every
+   * breakpoint, applied via inline style. Defaults to `center`.
+   * `/reseau` used to override this with `"top"` so the cocoa
    * farmer's portrait is visible from the head instead of being
-   * cropped at neck level.
+   * cropped at neck level. For breakpoint-aware overrides see
+   * `bgPositionClassName` below.
    */
   bgPosition?: "center" | "top" | "bottom" | "left" | "right";
+  /**
+   * Optional Tailwind class string applied to the background `<Image>`
+   * for responsive `object-position` control. When provided, the
+   * inline `bgPosition` style is dropped so the className wins. Use
+   * literal class strings (e.g. `"object-[30%_top] sm:object-top"`)
+   * so Tailwind's content scanner can pick them up.
+   *
+   * `/reseau` uses this to keep the farmer visible on mobile (narrow
+   * crop pulls the subject in from the left) while keeping the
+   * desktop `top` framing.
+   */
+  bgPositionClassName?: string;
 }) {
   const { locale } = useI18n();
 
   return (
-    <section className="relative pt-32 pb-14 sm:pt-36 sm:pb-20 overflow-hidden">
+    <section
+      className="relative pt-32 pb-14 sm:pt-36 sm:pb-20 overflow-hidden"
+      /*
+       * Brand dark-green fallback painted on the section itself.
+       * The hero photo is `priority` + `fetchPriority="high"`, but
+       * during the brief navigation window the photograph may not
+       * have hit the cache yet. Without this fallback the user saw
+       * the cream page body flash where the hero should be, then the
+       * image pop in — exactly the "background prend du temps à
+       * apparaître" report. Painting the green anchor of the overlay
+       * gradient directly on the section means the hero already
+       * looks like itself before the photo has decoded.
+       */
+      style={{ backgroundColor: "#1F3D2F" }}
+    >
       {/* Same Ivorian-cocoa photograph as the home hero. We don't
           parallax it here — page heroes are short bands, not full
           screens — but the visual identity stays unmistakable. */}
@@ -67,9 +96,15 @@ export function PageHero({
           alt=""
           fill
           priority
+          fetchPriority="high"
+          sizes="100vw"
           quality={80}
-          className="object-cover"
-          style={{ objectPosition: bgPosition }}
+          className={`object-cover${
+            bgPositionClassName ? ` ${bgPositionClassName}` : ""
+          }`}
+          style={
+            bgPositionClassName ? undefined : { objectPosition: bgPosition }
+          }
         />
       </div>
 

@@ -47,7 +47,13 @@ export function LegalShell({
     <div className="bg-[#FDFBF7]">
       {/* Hero band — visually aligned with the home HeroBanner and
           PageHero so all dedicated pages share the same orange identity. */}
-      <section className="relative pt-32 pb-16 sm:pt-36 sm:pb-20 overflow-hidden">
+      <section
+        className="relative pt-32 pb-16 sm:pt-36 sm:pb-20 overflow-hidden"
+        /* Brand dark-green fallback so the band is fully painted even
+           while the photograph is still decoding; see PageHero for
+           the long-form rationale. */
+        style={{ backgroundColor: "#1F3D2F" }}
+      >
         {/* Same Ivorian-cocoa photograph as the home hero and PageHero.
             `priority` + `fetchPriority="high"` so it loads with the LCP. */}
         <div className="absolute inset-0 z-0">
@@ -56,6 +62,7 @@ export function LegalShell({
             alt=""
             fill
             priority
+            fetchPriority="high"
             quality={80}
             sizes="100vw"
             className="object-cover object-center"

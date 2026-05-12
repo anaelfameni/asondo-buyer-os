@@ -38,6 +38,10 @@ export function HeroBanner() {
     <section
       ref={containerRef}
       className="relative min-h-screen flex items-center overflow-hidden"
+      /* Brand dark-green fallback so the section already reads as the
+         hero before the photograph has decoded; see PageHero for the
+         long-form rationale. */
+      style={{ backgroundColor: "#1F3D2F" }}
     >
       {/* Background image with Ken Burns parallax - PURE IMAGE */}
       <motion.div
@@ -49,6 +53,8 @@ export function HeroBanner() {
           alt="Plantation de cacao en Côte d'Ivoire"
           fill
           priority
+          fetchPriority="high"
+          sizes="100vw"
           quality={92}
           className="object-cover object-center"
         />

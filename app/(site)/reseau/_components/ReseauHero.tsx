@@ -12,11 +12,17 @@ export function ReseauHero() {
   return (
     <PageHero
       bgImage="/photo5.jpg"
-      // Anchor the photograph at the top so the cocoa farmer's full
-      // upper body (head + shoulders) is visible above the motorbike,
-      // instead of being cropped at neck level by the default centre
-      // anchor.
-      bgPosition="top"
+      // On the wide desktop hero `object-position: top` keeps the
+      // farmer's head and shoulders in frame because the natural
+      // 1024×683 photo is barely cropped horizontally. On a narrow
+      // mobile viewport the same centre-top anchor cropped half of
+      // the farmer out of frame — he stands at ~30% from the left
+      // edge of the original photo, so we shift the focal point to
+      // `30% top` until the `sm:` breakpoint kicks back the desktop
+      // framing. The class string is a literal so Tailwind's
+      // content scanner picks both arbitrary values up at build
+      // time; see `bgPositionClassName` on PageHero for the contract.
+      bgPositionClassName="object-[30%_top] sm:object-top"
       eyebrow={fr ? "Sourcing · Côte d'Ivoire" : "Sourcing · Côte d'Ivoire"}
       title={
         fr

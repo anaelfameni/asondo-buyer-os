@@ -82,18 +82,16 @@ export function Footer() {
                 {t.footer.tagline}
               </p>
 
-              {/* Industry alignment — real official logos rendered via next/image.
-                  Only logos where Asondo has a verifiable formal status sit here:
+              {/* Industry alignment — official logos rendered via next/image:
                   - CCC : licence d'exportateur agréé 2025/26 (Reuters / Conseil
                     du Café-Cacao). Vérifiable.
                   - FCC : entrée publique sur la page des membres FCC. Vérifiable.
+                  - Rainforest Alliance : alignement sur le référentiel (pratiques
+                    durables) ; le logo est rétabli ici à la demande du CEO pour
+                    refléter la position de marché. Le tooltip "Pratiques
+                    durables alignées" reste la formulation officielle.
                   - EUDR Ready badge : auto-déclaratif, libellé "ready" reflète
-                    la lecture EUDR Asondo (cf. /eudr).
-                  The Rainforest Alliance logo deliberately is NOT in the footer
-                  row — Asondo n'est pas Rainforest Alliance Certified au sens
-                  du référentiel ; ses pratiques durables s'alignent sur ces
-                  standards, ce que la section IndustryAlignment du hero affiche
-                  avec un tooltip explicite "Pratiques durables alignées". */}
+                    la lecture EUDR Asondo (cf. /eudr). */}
               <div>
                 <p className="text-xs uppercase tracking-[0.2em] text-white font-semibold mb-3">
                   {t.footer.industryStandards}
@@ -110,6 +108,13 @@ export function Footer() {
                     src="/FCClogo.jpg"
                     alt="Federation of Cocoa Commerce"
                     width={68}
+                    height={36}
+                    className="object-contain h-9 w-auto"
+                  />
+                  <Image
+                    src="/RainforestAllianceLogo.png"
+                    alt="Rainforest Alliance"
+                    width={90}
                     height={36}
                     className="object-contain h-9 w-auto"
                   />

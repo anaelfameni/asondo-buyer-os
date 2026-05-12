@@ -50,7 +50,20 @@ export function SupplyMap({
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "55% 45%",
+          /*
+           * 11fr / 9fr keeps the visual ~55/45 split we want between
+           * the map (left) and the rail (right). Switching from
+           * percentages (`55% 45%`) to fr units is intentional: with
+           * `gap: 6mm`, percentages sum to 100% of the container and
+           * the gap is then ADDED on top, pushing the right rail
+           * 6mm past the inner padding and clipping the "Bassins de
+           * sourcing" cards + criteria panel off the right edge of
+           * page 4 (the "partie coupée" bug reported on the PDF).
+           * `fr` units, by contrast, distribute the leftover space
+           * AFTER the gap, so the rail fits within the printable
+           * area whatever the page padding is.
+           */
+          gridTemplateColumns: "11fr 9fr",
           gap: "6mm",
           flex: "1 1 0",
           minHeight: 0,
