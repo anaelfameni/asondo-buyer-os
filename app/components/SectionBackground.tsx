@@ -63,10 +63,10 @@ export function SectionBackground({
       : "object-center";
 
   const tintColor = variant === "dark" ? "31, 61, 47" : "253, 251, 247";
-  // Default tints tuned so the photograph is ~75% visible (tint ~0.25).
-  // High enough that titles, cards and orange CTAs still pop, low
-  // enough that the photograph reads as photograph, not as wallpaper.
-  const tintAlpha = tint ?? (variant === "dark" ? 0.3 : 0.25);
+  // Default tints tuned so the photograph is ~40% visible (tint ~0.60).
+  // The photo reads as a clearly intentional editorial backdrop
+  // without overpowering titles, cards and orange CTAs.
+  const tintAlpha = tint ?? (variant === "dark" ? 0.6 : 0.6);
   const fadeStop = variant === "dark" ? "#0F2619" : "#FDFBF7";
 
   return (
