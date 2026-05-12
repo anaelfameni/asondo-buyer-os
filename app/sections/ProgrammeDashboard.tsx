@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { asondoData } from "@/lib/asondo-data";
 import { useI18n } from "@/lib/i18n-context";
 import { AnimatedSection } from "@/app/components/AnimatedSection";
 import { AnimatedCounter } from "@/app/components/AnimatedCounter";
-import Link from "next/link";
 import { CheckCircle2, ChevronDown, ArrowRight, MapPin, TreePine, TrendingUp, Wallet } from "lucide-react";
 
 const pillarConfig: Record<string, { grad: string; ring: string; icon: React.ElementType }> = {
@@ -167,12 +167,12 @@ export function ProgrammeDashboard() {
 
         <AnimatedSection delay={0.3} className="text-center mt-14">
           <p className="text-[#6B7280] mb-5">{t.programme.mappingQuestion}</p>
-          {/* Route to the full /eudr page. The dashboard is reused
-              on both the homepage (where an in-page `#evidence-matrix`
-              anchor exists) and on /programme (where it does NOT),
-              so anchoring to #evidence-matrix was silently no-op on
-              /programme. /eudr is the canonical destination for the
-              full EUDR evidence matrix anyway. */}
+          {/* Always route to /eudr. This dashboard is mounted on both
+              the homepage (where `#evidence-matrix` used to scroll) and
+              on `/programme` (where the same anchor did nothing, hence
+              the "bouton ne marche pas" report). A real navigation
+              works in both contexts and lands the buyer on the proof
+              page that hosts the full Evidence Matrix. */}
           <Link
             href="/eudr"
             className="group inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white border-2 border-[#E8833D] text-[#D06B1F] font-semibold hover:bg-[#E8833D] hover:text-white transition-all shadow-sm"

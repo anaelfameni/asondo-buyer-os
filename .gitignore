@@ -42,3 +42,5 @@ next-env.d.ts
 .windsurf/
 
 .git-commit-msg.txt
+
+regen-pdfs.log

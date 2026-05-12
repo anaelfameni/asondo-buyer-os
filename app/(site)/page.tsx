@@ -14,11 +14,12 @@ export default function Home() {
       <SupplyMap />
       <ProgrammeDashboard />
       {/*
-       * SamplePackCTA (Buyer Assurance Pack download) intentionally
-       * sits BEFORE the AI assistant. A buyer who has just scrolled
-       * through the Evidence Matrix and the programme is at peak
-       * conversion intent — we want the big orange PDF button in
-       * view before we offer the Q&A fallback.
+       * Order matters here: the Buyer Assurance Pack sample lives
+       * directly above the AI Copilot. The sample acts as the
+       * "show me the proof" hand-off, the AI copilot then answers
+       * any follow-up question the buyer might still have. Swapping
+       * them used to bury the PDF under the chat and lost half the
+       * downloads.
        */}
       <SamplePackCTA />
       <AICopilot />

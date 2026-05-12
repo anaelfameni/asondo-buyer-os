@@ -28,11 +28,13 @@ export default function EudrPage() {
       {/* Evidence matrix — main signal */}
       <EvidenceMatrix />
 
-      {/* Buyer Assurance Pack download.
-          Sits between the evidence matrix and the live operational
-          status, giving any buyer who just scanned the 4-pillar
-          compliance summary an immediate way to pull the printable
-          dossier before reading the real-time campaign status. */}
+      {/* Buyer Assurance Pack sample download. Placed between the
+          Evidence Matrix (the "what is in the pack") and the
+          Operational Status banner (the "where we stand right now"),
+          so a buyer's natural reading order is proof -> artefact ->
+          live status. Mirrors the homepage flow and reuses the same
+          single-click static-PDF download path, so it works on both
+          the home and /eudr without a second code path. */}
       <SamplePackCTA />
 
       {/* Honest, real-time status of the EUDR ramp-up */}

@@ -154,15 +154,13 @@ export function HeroBanner() {
               <StatBlock value="EUDR" label={t.hero.statEudrReady} icon={CheckCircle2} />
             </motion.div>
 
-            {/* CTA Buttons.
-                Primary = "Vérifier notre conformité EUDR" → /eudr.
-                We used to scroll to the in-page #evidence-matrix, but
-                that hides the full EUDR narrative (compliance officer,
-                DDS model, buyer pack request). Routing to /eudr gives
-                the buyer the real compliance landing page, which is
-                exactly what the button promises.
-                Secondary = "Demander un devis" → /contact. */}
+            {/* CTA Buttons */}
             <motion.div variants={fadeUp} className="flex flex-wrap gap-3">
+              {/* Primary CTA: navigate to the full /eudr proof page so
+                  a buyer can drill into the Evidence Matrix and the
+                  Compliance Officer record. Was a same-page scroll to
+                  the in-page Evidence Matrix; that worked on the home
+                  but was inconsistent with the EUDR "deep" experience. */}
               <Link
                 href="/eudr"
                 className="group relative inline-flex items-center gap-2 px-7 py-4 rounded-full bg-white text-[#D06B1F] font-semibold hover:bg-[#FEF3E7] transition-all shadow-2xl shadow-black/25 btn-premium"
@@ -170,6 +168,8 @@ export function HeroBanner() {
                 {t.hero.ctaPrimary}
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </Link>
+              {/* RFQ form lives on /contact only — homepage CTA is a
+                  Link, no longer a same-page scroll trigger. */}
               <Link
                 href="/contact"
                 className="group inline-flex items-center gap-2 px-7 py-4 rounded-full bg-gradient-to-br from-[#E8833D] to-[#D06B1F] text-white font-semibold hover:from-[#D06B1F] hover:to-[#A85318] transition-all shadow-2xl shadow-[#D06B1F]/40 btn-premium"
