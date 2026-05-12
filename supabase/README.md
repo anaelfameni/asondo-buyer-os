@@ -1,9 +1,19 @@
 # Supabase setup — Asondo Buyer OS
 
-This site uses Supabase Postgres to persist **demandes de devis** (RFQ
-leads). Without Supabase, leads are written to a local JSON file that
-Vercel wipes on every cold start, which is why the CEO console showed
-an empty pipeline on production even after buyers submitted the form.
+This site uses Supabase Postgres to persist two pieces of state that
+must survive serverless cold starts:
+
+1. **Demandes de devis** (RFQ leads) — table `rfq_leads`.
+2. **CEO console settings** (readiness flags, contact info,
+   geolocation coverage, certifications) — table
+   `console_settings_kv`.
+
+Without Supabase, both are written to local JSON files
+(`data/rfq-leads.json`, `data/settings.json`) that Vercel wipes on
+every cold start and won't even allow writes to in production (the
+serverless filesystem is read-only). That's why the CEO console
+showed an empty RFQ pipeline and the **Enregistrer** button on
+`/console/settings` silently failed on production before this setup.
 
 ## One-time setup (5 minutes)
 
@@ -18,14 +28,18 @@ an empty pipeline on production even after buyers submitted the form.
    makes you set one.
 5. Wait ~2 minutes for the project to spin up.
 
-### 2. Run the migration
+### 2. Run the migrations
 
-1. Open the new project, go to **SQL Editor → New query**.
-2. Paste the full contents of `supabase/migrations/0001_rfq_leads.sql`
-   from this repo.
-3. Click **Run**. You should see "Success. No rows returned".
-4. Sanity check: open **Table editor**, you should see a new
-   `rfq_leads` table with no rows yet.
+Open the new project and go to **SQL Editor → New query**, then run
+each migration once (they're idempotent so re-running is safe):
+
+1. Paste the contents of `supabase/migrations/0001_rfq_leads.sql`,
+   click **Run**, expect "Success. No rows returned".
+2. Paste the contents of `supabase/migrations/0002_console_settings.sql`,
+   click **Run**, same expected result.
+
+Sanity check: open **Table editor**, you should see two new tables —
+`rfq_leads` and `console_settings_kv` — both empty.
 
 ### 3. Copy the two secrets you need
 
@@ -69,17 +83,31 @@ will now land in Supabase, visible immediately in the CEO console at
 
 ## Verify
 
+### RFQ pipeline
+
 1. Submit a test RFQ on the public site (any page with the RFQ form,
    or `/contact`).
 2. Open Supabase **Table editor → rfq_leads**: one row should appear.
 3. Open `/console/login`, sign in with `Asondo2026!`, go to
    `/console/rfq`: the same lead should be listed with status `new`.
 
+### CEO console settings
+
+1. Open `/console/login` on production, sign in.
+2. Go to `/console/settings`, change anything (e.g. tick a readiness
+   flag or edit the CEO phone), click **Enregistrer**.
+3. You should see the toast **"Paramètres enregistrés"**.
+4. Open Supabase **Table editor → console_settings_kv**: one row
+   with `key = console_settings` should appear, with the full JSON
+   blob in the `data` column.
+5. Refresh `/console/settings` — your change must persist.
+
 ## How the code picks Supabase vs file
 
-See `lib/rfq-store.ts`. The four functions (`listLeads`, `createLead`,
-`updateLead`, `countLeadsByStatus`) check `isSupabaseConfigured()` on
-every call. If both env vars are present, they delegate to
-`lib/rfq-store-supabase.ts` which talks to the PostgREST endpoint via
-plain `fetch`. Otherwise, they fall back to the JSON file in
-`data/rfq-leads.json`. No extra npm dependency is needed.
+See `lib/rfq-store.ts` and `lib/settings-store.ts`. Each public
+function checks `isSupabaseConfigured()` / `isSupabaseSettingsConfigured()`
+on every call. If both env vars are present, it delegates to
+`lib/rfq-store-supabase.ts` / `lib/settings-store-supabase.ts` which
+talk to the PostgREST endpoint via plain `fetch`. Otherwise, it falls
+back to the JSON file in `data/rfq-leads.json` / `data/settings.json`.
+No extra npm dependency is needed.
