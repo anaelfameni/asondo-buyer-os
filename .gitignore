@@ -40,3 +40,5 @@ next-env.d.ts
 
 # windsurf local skills cache (not for git)
 .windsurf/
+
+.git-commit-msg.txt
