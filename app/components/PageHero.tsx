@@ -9,9 +9,16 @@ import { useI18n } from "@/lib/i18n-context";
  * Compact hero band used at the top of dedicated content pages
  * (`/eudr`, `/programme`, `/reseau`, `/contact`, `/equipe`, etc.).
  * Visual identity is intentionally aligned with the home `HeroBanner`:
- * the same `/backgroundhero.jpg` photograph layered under the same
- * green-to-orange overlay gradient, so every dedicated page reads as
- * "part of Asondo" the moment a buyer lands on it.
+ * a brand photograph layered under the same green-to-orange overlay
+ * gradient, so every dedicated page reads as "part of Asondo" the
+ * moment a buyer lands on it.
+ *
+ * The background image defaults to `/backgroundhero.jpg` (Ivorian
+ * cocoa plantation, same as the home hero). Callers can override via
+ * `bgImage` to use one of the cocoa-specific photographs (e.g.
+ * `/photo1.jpg` for EUDR pages, `/photo4.jpg` for the programme,
+ * `/photo5.jpg` for the sourcing network) so each page has its own
+ * visual identity while keeping the unified orange overlay.
  *
  * All foreground text is rendered on the dark orange overlay, so we
  * use white / white-alpha typography and a translucent eyebrow pill,
@@ -23,6 +30,7 @@ export function PageHero({
   subtitle,
   breadcrumbs,
   cta,
+  bgImage = "/backgroundhero.jpg",
 }: {
   eyebrow?: string;
   title: string;
@@ -30,6 +38,13 @@ export function PageHero({
   /** Items rendered as `Home > … > current`. Last item should be the current page. */
   breadcrumbs?: Array<{ label: string; href?: string }>;
   cta?: React.ReactNode;
+  /**
+   * Path to the background photograph (under `/public`). Defaults to
+   * the shared Asondo cocoa hero. Callers should pass one of the
+   * `/photoN.jpg` images to give a page its own visual identity while
+   * keeping the rest of the hero chrome unchanged.
+   */
+  bgImage?: string;
 }) {
   const { locale } = useI18n();
 
@@ -40,7 +55,7 @@ export function PageHero({
           screens — but the visual identity stays unmistakable. */}
       <div className="absolute inset-0 z-0">
         <Image
-          src="/backgroundhero.jpg"
+          src={bgImage}
           alt=""
           fill
           priority

@@ -11,6 +11,7 @@ export function ProgrammeHero() {
 
   return (
     <PageHero
+      bgImage="/photo4.jpg"
       eyebrow={fr ? "Programme · 4 piliers" : "Programme · 4 pillars"}
       title={
         fr

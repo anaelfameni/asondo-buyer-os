@@ -16,6 +16,7 @@ export function EudrHero() {
 
   return (
     <PageHero
+      bgImage="/photo1.jpg"
       eyebrow={fr ? "EUDR · Règlement UE 2023/1115" : "EUDR · EU Regulation 2023/1115"}
       title={
         fr

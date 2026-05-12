@@ -4,7 +4,7 @@ import { SupplyMap } from "@/app/sections/SupplyMap";
 import { ProgrammeDashboard } from "@/app/sections/ProgrammeDashboard";
 import { AICopilot } from "@/app/sections/AICopilot";
 import { SamplePackCTA } from "@/app/sections/SamplePackCTA";
-import { RFQForm } from "@/app/sections/RFQForm";
+import { HomeRFQTeaser } from "@/app/sections/HomeRFQTeaser";
 
 export default function Home() {
   return (
@@ -15,7 +15,8 @@ export default function Home() {
       <ProgrammeDashboard />
       <AICopilot />
       <SamplePackCTA />
-      <RFQForm />
+      {/* Homepage RFQ teaser. The actual form lives on /contact only. */}
+      <HomeRFQTeaser />
     </main>
   );
 }

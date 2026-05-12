@@ -11,6 +11,7 @@ export function ReseauHero() {
 
   return (
     <PageHero
+      bgImage="/photo5.jpg"
       eyebrow={fr ? "Sourcing · Côte d'Ivoire" : "Sourcing · Côte d'Ivoire"}
       title={
         fr

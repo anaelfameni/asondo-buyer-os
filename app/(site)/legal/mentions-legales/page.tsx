@@ -10,7 +10,7 @@ export default function MentionsLegalesPage() {
 
   return (
     <LegalShell
-      eyebrow={fr ? "Information légale" : "Legal information"}
+      eyebrow={fr ? "Identité de l'éditeur" : "Publisher identity"}
       title={fr ? "Mentions légales" : "Legal notice"}
       subtitle={
         fr

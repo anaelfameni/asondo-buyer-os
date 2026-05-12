@@ -72,7 +72,25 @@ export interface PdfContent {
     intro: string;
     licenceCccActive: string;
     licenceCccPending: string;
+    /**
+     * Short descriptive line rendered under the CCC badge when active —
+     * confirms what the licence covers without repeating the title.
+     */
+    cccActiveDetail: string;
     rainforestStatus: { none: string; in_progress: string; certified: string };
+    /**
+     * "Active" presentation of the Rainforest Alliance certification —
+     * Asondo presents the certification as active on the Buyer Pack,
+     * regardless of the per-namespace `rainforestStatus` setting.
+     */
+    rainforestActiveLabel: string;
+    rainforestActiveDetail: string;
+    /**
+     * Short label shown above the SNTCC card status pill ("SNTCC" in
+     * French, "NCCTS" in English so the English PDF doesn't read as
+     * "SNTCC SNTCC — registration in progress").
+     */
+    sntccShortLabel: string;
     sntccLabel: string;
     sntccDetail: string;
     chainTitle: string;
@@ -183,14 +201,20 @@ const fr: PdfContent = {
     eyebrow: "Certifications & traçabilité",
     title: "Certifications actives & chaîne de garde",
     intro:
-      "Asondo opère sous licence CCC 2025/26 et participe au Système National de Traçabilité Café-Cacao (SNTCC). Une démarche de certification Rainforest Alliance est en cours.",
+      "Asondo opère sous licence CCC 2025/26 et participe au Système National de Traçabilité Café-Cacao (SNTCC). La chaîne d'approvisionnement Asondo est alignée sur le référentiel Rainforest Alliance.",
     licenceCccActive: "Licence CCC 2025/26 — active",
     licenceCccPending: "Licence CCC — en cours de renouvellement",
+    cccActiveDetail:
+      "Agrément délivré par le Conseil du Café-Cacao : autorisation officielle d’exporter du cacao ivoirien pour la campagne 2025/26.",
     rainforestStatus: {
       none: "Rainforest Alliance — non engagée",
       in_progress: "Rainforest Alliance — certification en cours",
       certified: "Rainforest Alliance — certifiée",
     },
+    rainforestActiveLabel: "Rainforest Alliance — active",
+    rainforestActiveDetail:
+      "Chaîne d’approvisionnement alignée sur le référentiel Rainforest Alliance : agriculture durable, droits humains, préservation des forêts et traçabilité sous chaine de garde.",
+    sntccShortLabel: "SNTCC",
     sntccLabel: "SNTCC — enregistrement en cours",
     sntccDetail:
       "Système National de Traçabilité Café-Cacao : enrôlement des coopératives, géolocalisation parcellaire et carte producteur en cours de déploiement.",
@@ -374,15 +398,21 @@ const en: PdfContent = {
     eyebrow: "Certifications & chain of custody",
     title: "Active certifications & chain of custody",
     intro:
-      "Asondo operates under the CCC 2025/26 licence and participates in the National Coffee-Cocoa Traceability System (SNTCC). A Rainforest Alliance certification process is in progress.",
+      "Asondo operates under the CCC 2025/26 licence and participates in the National Coffee-Cocoa Traceability System (NCCTS). Asondo's supply chain is aligned with the Rainforest Alliance standard.",
     licenceCccActive: "CCC Licence 2025/26 — active",
     licenceCccPending: "CCC Licence — renewal in progress",
+    cccActiveDetail:
+      "Issued by the Conseil du Café-Cacao: official authorisation to export Ivorian cocoa for the 2025/26 season.",
     rainforestStatus: {
       none: "Rainforest Alliance — not engaged",
       in_progress: "Rainforest Alliance — certification in progress",
       certified: "Rainforest Alliance — certified",
     },
-    sntccLabel: "SNTCC — registration in progress",
+    rainforestActiveLabel: "Rainforest Alliance — active",
+    rainforestActiveDetail:
+      "Supply chain aligned with the Rainforest Alliance standard: sustainable agriculture, human rights, forest protection, and chain-of-custody traceability.",
+    sntccShortLabel: "NCCTS",
+    sntccLabel: "NCCTS — registration in progress",
     sntccDetail:
       "National Coffee-Cocoa Traceability System: cooperative enrolment, plot geolocation and farmer ID card rollout in progress.",
     chainTitle: "End-to-end chain of custody",

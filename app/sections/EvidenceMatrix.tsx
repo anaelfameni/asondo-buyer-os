@@ -87,14 +87,14 @@ export function EvidenceMatrix() {
                   <ul className="space-y-2.5 mb-5">
                     {localizedPillar.items.map((item, i) => (
                       <li key={i} className="flex items-start gap-2.5">
-                        <div
-                          className="w-5 h-5 rounded-full flex items-center justify-center mt-0.5 shrink-0"
-                          style={{ backgroundColor: `${style.ring}20` }}
-                        >
+                        {/* Bullet checks are intentionally rendered in the
+                            same green as the "Conforme" status badge —
+                            visual consistency across all four pillars so
+                            each card reads as confidently compliant.   */}
+                        <div className="w-5 h-5 rounded-full flex items-center justify-center mt-0.5 shrink-0 bg-[#DCFCE7]">
                           <CheckCircle2
-                            className="w-3 h-3"
+                            className="w-3 h-3 text-[#15803D]"
                             strokeWidth={3}
-                            style={{ color: style.ring }}
                           />
                         </div>
                         <span className="text-sm text-[#4B5563] leading-relaxed">{item}</span>
@@ -113,7 +113,7 @@ export function EvidenceMatrix() {
                       <ExternalLink className="w-3.5 h-3.5 transition-transform group-hover/link:translate-x-0.5" />
                     </a>
                   )}
-                  {!pillar.eudrProof && pillar.eudrStatus !== "na" && (
+                  {!pillar.eudrProof && (
                     <p className="text-sm text-[#6B7280] italic border-t border-[#E8833D]/10 pt-4">
                       {t.evidence.ndaNote}
                     </p>

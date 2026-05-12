@@ -256,6 +256,7 @@ export const translations: Record<Locale, TranslationShape> = {
           items: [
             "Contrôle de l'approvisionnement produit",
             "Transparence de notre chaîne d'approvisionnement",
+            "Établir une chaîne d'approvisionnement responsable et durable",
             "Assurance qualité de nos produits",
           ],
         },
@@ -513,6 +514,7 @@ export const translations: Record<Locale, TranslationShape> = {
           items: [
             "Product sourcing control",
             "Transparency of our supply chain",
+            "Establishing a responsible and sustainable supply chain",
             "Quality assurance of our products",
           ],
         },

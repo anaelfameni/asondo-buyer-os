@@ -41,6 +41,7 @@ Asondo est structuré autour de 4 piliers EUDR :
 ### Pilier 1 : Traçabilité (Conforme)
 - Contrôle de l'approvisionnement produit
 - Transparence de la chaîne d'approvisionnement
+- Établir une chaîne d'approvisionnement responsable et durable
 - Assurance qualité des produits
 - Géolocalisation GPS des coopératives (détails disponibles sous NDA)
 
@@ -52,7 +53,7 @@ Asondo est structuré autour de 4 piliers EUDR :
 - Régénération des sols
 - Restauration des zones dégradées
 
-### Pilier 3 : Résilience & Profit (Presque conforme)
+### Pilier 3 : Résilience & Profit (Conforme)
 - Paiement du prix officiel CCC + primes de certification aux producteurs
 - Promotion du genre dans les coopératives
 - Protection de l'enfance (lutte contre le travail des enfants)
@@ -61,7 +62,7 @@ Asondo est structuré autour de 4 piliers EUDR :
 - Agriculture régénératrice et attractive pour les jeunes
 - Développement communautaire
 
-### Pilier 4 : Banque (Presque conforme)
+### Pilier 4 : Banque (Conforme)
 - Infrastructure de mobile banking pour le réseau de producteurs
 - Assurances santé, accident, décès pour les producteurs
 - Assurance des biens
@@ -131,6 +132,7 @@ Asondo is structured around 4 EUDR pillars:
 ### Pillar 1: Traceability (Compliant)
 - Product supply control
 - Supply chain transparency
+- Establishing a responsible and sustainable supply chain
 - Product quality assurance
 - GPS geolocation of cooperatives (details available under NDA)
 
@@ -142,7 +144,7 @@ Asondo is structured around 4 EUDR pillars:
 - Soil regeneration
 - Restoration of degraded areas
 
-### Pillar 3: Resilience & Profit (Almost compliant)
+### Pillar 3: Resilience & Profit (Compliant)
 - Official CCC price + certification premiums paid to producers
 - Gender promotion in cooperatives
 - Child protection (anti-child-labour)
@@ -151,7 +153,7 @@ Asondo is structured around 4 EUDR pillars:
 - Regenerative and youth-attractive agriculture
 - Community development
 
-### Pillar 4: Banking (Almost compliant)
+### Pillar 4: Banking (Compliant)
 - Mobile banking infrastructure for producer network
 - Health, accident, and life insurance for producers
 - Asset insurance

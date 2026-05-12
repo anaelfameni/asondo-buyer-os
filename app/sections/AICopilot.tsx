@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { chatResponsesByLocale, findResponse } from "@/lib/chat-responses";
 import { useI18n } from "@/lib/i18n-context";
 import { AnimatedSection } from "@/app/components/AnimatedSection";
-import { Send, User, Bot, Sparkles } from "lucide-react";
+import { Send, User, Bot } from "lucide-react";
 import { AsondoMark } from "../components/AsondoLogo";
 
 interface Message {
@@ -108,10 +108,6 @@ export function AICopilot() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="max-w-4xl mx-auto">
           <AnimatedSection className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FEF3E7] border border-[#E8833D]/20 text-[#D06B1F] text-sm font-semibold mb-6">
-              <Sparkles className="w-4 h-4" />
-              AI Assistant
-            </div>
             <h2 className="text-headline text-[#1A1A1A] mb-5 text-balance">
               {t.ai.title}
             </h2>
@@ -136,10 +132,7 @@ export function AICopilot() {
                     </div>
                     <div>
                       <h3 className="text-white font-bold">{t.ai.assistantName}</h3>
-                      <p className="text-xs text-[#F2B83E] flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse" />
-                        {t.ai.replySpeed}
-                      </p>
+                      <p className="text-xs text-[#F2B83E]">{t.ai.replySpeed}</p>
                     </div>
                   </div>
                 </div>

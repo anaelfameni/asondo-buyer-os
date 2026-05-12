@@ -7,6 +7,7 @@ import { IndustryAlignment } from "../components/IndustryAlignment";
 import { ShieldCheck, Clock, MapPin, ArrowRight, CheckCircle2 } from "lucide-react";
 import { useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 export function HeroBanner() {
   const { t } = useI18n();
@@ -126,7 +127,11 @@ export function HeroBanner() {
               className="text-display font-bold mb-6 text-balance leading-[0.98]"
               style={{ textShadow: "0 2px 24px rgba(0,0,0,0.3)" }}
             >
-              <span className="whitespace-nowrap">{t.hero.taglineMain}</span>
+              {/* `lg:whitespace-nowrap` only forces a single line on
+                  large screens. On mobile the longer FR string
+                  ("Votre partenaire ivoirien") is allowed to wrap so
+                  it never overflows the viewport. */}
+              <span className="lg:whitespace-nowrap">{t.hero.taglineMain}</span>
               <span className="block mt-1">
                 <span className="bg-gradient-to-r from-[#F2B83E] via-[#FFE9B0] to-[#F2B83E] bg-clip-text text-transparent">
                   {t.hero.taglineHighlight}
@@ -164,14 +169,15 @@ export function HeroBanner() {
                 {t.hero.ctaPrimary}
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </button>
-              <button
-                type="button"
-                onClick={() => scrollToSection("rfq-form")}
+              {/* RFQ form lives on /contact only — homepage CTA is a
+                  Link, no longer a same-page scroll trigger. */}
+              <Link
+                href="/contact"
                 className="group inline-flex items-center gap-2 px-7 py-4 rounded-full bg-gradient-to-br from-[#E8833D] to-[#D06B1F] text-white font-semibold hover:from-[#D06B1F] hover:to-[#A85318] transition-all shadow-2xl shadow-[#D06B1F]/40 btn-premium"
               >
                 {t.hero.ctaSecondary}
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-              </button>
+              </Link>
             </motion.div>
           </motion.div>
 

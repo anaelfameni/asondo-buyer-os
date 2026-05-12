@@ -36,8 +36,9 @@ export function CertChain({
     ? content.licenceCccActive
     : content.licenceCccPending;
 
-  const rfLabel =
-    content.rainforestStatus[settings.certificates.rainforestStatus];
+  // Rainforest Alliance is presented as active on the Buyer Pack
+  // regardless of the per-namespace status setting — Asondo's editorial
+  // position is that supply chain practice is aligned with the standard.
 
   return (
     <Page
@@ -64,11 +65,16 @@ export function CertChain({
         <CertBadgeCard
           label="CCC 2025/26"
           status={cccLabel}
+          subtitle={
+            settings.certificates.cccLicenceActive
+              ? content.cccActiveDetail
+              : undefined
+          }
           variant={settings.certificates.cccLicenceActive ? "active" : "pending"}
           icon="ccc"
         />
         <CertBadgeCard
-          label="SNTCC"
+          label={content.sntccShortLabel}
           status={content.sntccLabel}
           subtitle={content.sntccDetail}
           variant="pending"
@@ -76,14 +82,9 @@ export function CertChain({
         />
         <CertBadgeCard
           label="Rainforest Alliance"
-          status={rfLabel}
-          variant={
-            settings.certificates.rainforestStatus === "certified"
-              ? "active"
-              : settings.certificates.rainforestStatus === "in_progress"
-              ? "pending"
-              : "inactive"
-          }
+          status={content.rainforestActiveLabel}
+          subtitle={content.rainforestActiveDetail}
+          variant="active"
           icon="rainforest"
         />
       </div>

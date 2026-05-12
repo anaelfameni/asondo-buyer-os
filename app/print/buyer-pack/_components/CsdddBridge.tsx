@@ -161,24 +161,39 @@ export function CsdddBridge({
         ))}
       </div>
 
-      <div className="pdf-spacer-sm" />
+      {/* Regulatory mapping table — wrapped in a flex `marginTop: auto`
+          container so it pushes to the bottom of the page body and a
+          fixed margin-bottom keeps it from kissing the legal footer.
+          Type-scale is also slightly compressed so the four rows always
+          fit without overlapping the closing footer block. */}
+      <div
+        style={{
+          marginTop: "auto",
+          paddingTop: "4mm",
+          marginBottom: "3mm",
+        }}
+      >
+        <div className="pdf-eyebrow" style={{ color: "#1f3d2f" }}>
+          {content.mappingTitle}
+        </div>
+        <div style={{ height: "2mm" }} />
 
-      {/* Regulatory mapping table */}
-      <div className="pdf-eyebrow" style={{ color: "#1f3d2f" }}>
-        {content.mappingTitle}
+        <table
+          className="pdf-mapping"
+          style={{ fontSize: "8pt" }}
+        >
+          <tbody>
+            {content.mappingRows.map((row, i) => (
+              <tr key={i}>
+                <td style={{ padding: "1.6mm 3mm" }}>{row.framework}</td>
+                <td style={{ padding: "1.6mm 3mm", color: "#4b5563" }}>
+                  {row.coverage}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
-      <div className="pdf-spacer-sm" />
-
-      <table className="pdf-mapping">
-        <tbody>
-          {content.mappingRows.map((row, i) => (
-            <tr key={i}>
-              <td>{row.framework}</td>
-              <td style={{ color: "#4b5563" }}>{row.coverage}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
     </Page>
   );
 }

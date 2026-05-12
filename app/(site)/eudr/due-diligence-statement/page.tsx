@@ -10,6 +10,7 @@ export default function DDSPage() {
 
   return (
     <LegalShell
+      bgImage="/photo1.jpg"
       eyebrow="EUDR · Annex II / Article 4"
       title={
         fr

@@ -10,6 +10,7 @@ export default function ComplianceOfficerPage() {
 
   return (
     <LegalShell
+      bgImage="/photo1.jpg"
       eyebrow="EUDR · Article 4"
       title={
         fr

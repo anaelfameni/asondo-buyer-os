@@ -24,6 +24,7 @@ export function LegalShell({
   title,
   subtitle,
   lastUpdated,
+  bgImage = "/backgroundhero.jpg",
   children,
 }: {
   eyebrow?: string;
@@ -31,6 +32,13 @@ export function LegalShell({
   subtitle?: string;
   /** Free-form string already localised by the caller. */
   lastUpdated?: string;
+  /**
+   * Path to the hero background photograph (under `/public`).
+   * Defaults to the shared Asondo cocoa hero. EUDR-deep pages pass
+   * `/photo1.jpg` so they share visual identity with the `/eudr`
+   * hero.
+   */
+  bgImage?: string;
   children: React.ReactNode;
 }) {
   const { locale } = useI18n();
@@ -44,7 +52,7 @@ export function LegalShell({
             `priority` + `fetchPriority="high"` so it loads with the LCP. */}
         <div className="absolute inset-0 z-0">
           <Image
-            src="/backgroundhero.jpg"
+            src={bgImage}
             alt=""
             fill
             priority
@@ -77,16 +85,20 @@ export function LegalShell({
         />
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
+          {/* `flex w-fit` (block-level) instead of `inline-flex` so the
+              eyebrow badge wraps onto its own line below — with
+              `inline-flex` both elements were sitting on the same
+              horizontal line on wide viewports. */}
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm text-white/85 hover:text-white transition-colors mb-6"
+            className="flex w-fit items-center gap-2 text-sm text-white/85 hover:text-white transition-colors mb-6"
           >
             <ArrowLeft className="w-4 h-4" />
             {locale === "fr" ? "Retour à l'accueil" : "Back to home"}
           </Link>
 
           {eyebrow ? (
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur border border-white/25 text-xs font-semibold text-white uppercase tracking-wider mb-4 shadow-lg shadow-black/10">
+            <div className="flex w-fit items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur border border-white/25 text-xs font-semibold text-white uppercase tracking-wider mb-4 shadow-lg shadow-black/10">
               <FileText className="w-3.5 h-3.5" />
               {eyebrow}
             </div>

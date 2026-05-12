@@ -185,14 +185,11 @@ export function Navbar() {
   };
 
   const goToRFQ = () => {
+    // The RFQ form lives exclusively on /contact now (the homepage only
+    // shows a teaser CTA), so every "Demander un devis" entrypoint
+    // always routes to /contact regardless of the current pathname.
     setMobileOpen(false);
-    if (pathname === "/") {
-      document
-        .getElementById("rfq-form")
-        ?.scrollIntoView({ behavior: "smooth" });
-    } else {
-      router.push("/contact");
-    }
+    router.push("/contact");
   };
 
   return (

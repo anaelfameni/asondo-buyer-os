@@ -107,9 +107,10 @@ export const asondoData = {
       items: [
         "Product sourcing control",
         "Transparency of our supply chain",
+        "Establishing a responsible and sustainable supply chain",
         "Quality assurance of our products",
       ],
-      eudrStatus: "almost-ready" as const,
+      eudrStatus: "ready" as const,
       eudrProof: null,
     },
     {
@@ -124,7 +125,7 @@ export const asondoData = {
         "Soil regeneration",
         "Restoring degraded areas",
       ],
-      eudrStatus: "almost-ready" as const,
+      eudrStatus: "ready" as const,
       eudrProof: null,
     },
     {
@@ -154,7 +155,7 @@ export const asondoData = {
         "Facilitation of access to loans through field presence",
         "Promotion of AVEC (Village Savings & Loans Associations)",
       ],
-      eudrStatus: "na" as const,
+      eudrStatus: "ready" as const,
       eudrProof: null,
     },
   ],
