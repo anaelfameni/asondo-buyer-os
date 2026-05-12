@@ -82,7 +82,18 @@ export function Footer() {
                 {t.footer.tagline}
               </p>
 
-              {/* Industry alignment — real official logos rendered via next/image */}
+              {/* Industry alignment — real official logos rendered via next/image.
+                  Only logos where Asondo has a verifiable formal status sit here:
+                  - CCC : licence d'exportateur agréé 2025/26 (Reuters / Conseil
+                    du Café-Cacao). Vérifiable.
+                  - FCC : entrée publique sur la page des membres FCC. Vérifiable.
+                  - EUDR Ready badge : auto-déclaratif, libellé "ready" reflète
+                    la lecture EUDR Asondo (cf. /eudr).
+                  The Rainforest Alliance logo deliberately is NOT in the footer
+                  row — Asondo n'est pas Rainforest Alliance Certified au sens
+                  du référentiel ; ses pratiques durables s'alignent sur ces
+                  standards, ce que la section IndustryAlignment du hero affiche
+                  avec un tooltip explicite "Pratiques durables alignées". */}
               <div>
                 <p className="text-xs uppercase tracking-[0.2em] text-white font-semibold mb-3">
                   {t.footer.industryStandards}
@@ -99,13 +110,6 @@ export function Footer() {
                     src="/FCClogo.jpg"
                     alt="Federation of Cocoa Commerce"
                     width={68}
-                    height={36}
-                    className="object-contain h-9 w-auto"
-                  />
-                  <Image
-                    src="/RainforestAllianceLogo.png"
-                    alt="Rainforest Alliance Certified"
-                    width={90}
                     height={36}
                     className="object-contain h-9 w-auto"
                   />
@@ -270,10 +274,13 @@ export function Footer() {
             <p className="text-xs text-white/85 text-center sm:text-left">
               © {new Date().getFullYear()} Asondo SA · {t.footer.copyright}
             </p>
+            {/* The RCCM is filed and verifiable (annonce notariée Maître
+                Nanou-Adou, Abidjan.net) — see asondoData.legal.rccm.
+                Don't say "pending publication", we have the number. */}
             <p className="text-xs text-white/70 text-center sm:text-right">
               {locale === "fr"
-                ? "Abidjan, Côte d'Ivoire · RCCM en cours de publication"
-                : "Abidjan, Côte d'Ivoire · Business registry pending publication"}
+                ? `Abidjan, Côte d'Ivoire · RCCM ${asondoData.legal.rccm}`
+                : `Abidjan, Côte d'Ivoire · RCCM ${asondoData.legal.rccm}`}
             </p>
           </motion.div>
         </div>
