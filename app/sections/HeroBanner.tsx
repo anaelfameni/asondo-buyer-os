@@ -8,6 +8,7 @@ import { ShieldCheck, Clock, MapPin, ArrowRight, CheckCircle2 } from "lucide-rea
 import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { backgroundheroImg } from "@/lib/hero-images";
 
 export function HeroBanner() {
   const { t } = useI18n();
@@ -49,13 +50,18 @@ export function HeroBanner() {
         className="absolute inset-0 z-0"
       >
         <Image
-          src="/backgroundhero.jpg"
+          /* StaticImageData import gives next/image enough metadata
+             to inline a blur LQIP, so the hero is fully painted on
+             every navigation back to `/` before the full JPEG
+             finishes decoding. */
+          src={backgroundheroImg}
           alt="Plantation de cacao en Côte d'Ivoire"
           fill
           priority
           fetchPriority="high"
           sizes="100vw"
           quality={92}
+          placeholder="blur"
           className="object-cover object-center"
         />
       </motion.div>

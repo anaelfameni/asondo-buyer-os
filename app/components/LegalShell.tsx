@@ -1,9 +1,10 @@
 "use client";
 
-import Image from "next/image";
+import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
 import { ArrowLeft, FileText } from "lucide-react";
 import { useI18n } from "@/lib/i18n-context";
+import { resolveHeroImage } from "@/lib/hero-images";
 
 /**
  * Shared chrome for legal / EUDR-deep content pages.
@@ -33,12 +34,15 @@ export function LegalShell({
   /** Free-form string already localised by the caller. */
   lastUpdated?: string;
   /**
-   * Path to the hero background photograph (under `/public`).
-   * Defaults to the shared Asondo cocoa hero. EUDR-deep pages pass
-   * `/photo1.jpg` so they share visual identity with the `/eudr`
-   * hero.
+   * Path to the hero background photograph (under `/public`) or the
+   * matching static import. Defaults to the shared Asondo cocoa
+   * hero. EUDR-deep pages pass `/photo1.jpg` so they share visual
+   * identity with the `/eudr` hero. Strings are mapped to their
+   * StaticImageData equivalent via `resolveHeroImage` so next/image
+   * can emit a blur LQIP and the band is painted instantly on every
+   * navigation.
    */
-  bgImage?: string;
+  bgImage?: string | StaticImageData;
   children: React.ReactNode;
 }) {
   const { locale } = useI18n();
@@ -55,19 +59,30 @@ export function LegalShell({
         style={{ backgroundColor: "#1F3D2F" }}
       >
         {/* Same Ivorian-cocoa photograph as the home hero and PageHero.
-            `priority` + `fetchPriority="high"` so it loads with the LCP. */}
-        <div className="absolute inset-0 z-0">
-          <Image
-            src={bgImage}
-            alt=""
-            fill
-            priority
-            fetchPriority="high"
-            quality={80}
-            sizes="100vw"
-            className="object-cover object-center"
-          />
-        </div>
+            `priority` + `fetchPriority="high"` so it loads with the LCP.
+            String paths are mapped to StaticImageData (see
+            `resolveHeroImage`) so a blur LQIP is inlined and the band
+            is fully painted on every navigation before the full JPEG
+            decodes. */}
+        {(() => {
+          const resolvedBg = resolveHeroImage(bgImage);
+          const isStatic = typeof resolvedBg !== "string";
+          return (
+            <div className="absolute inset-0 z-0">
+              <Image
+                src={resolvedBg}
+                alt=""
+                fill
+                priority
+                fetchPriority="high"
+                quality={80}
+                sizes="100vw"
+                placeholder={isStatic ? "blur" : "empty"}
+                className="object-cover object-center"
+              />
+            </div>
+          );
+        })()}
 
         {/* Same brand wash as PageHero — strong green anchor for
             white-text legibility, orange dialled down to ~10–15 % so

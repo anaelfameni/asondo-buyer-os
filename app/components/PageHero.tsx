@@ -1,9 +1,10 @@
 "use client";
 
-import Image from "next/image";
+import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
 import { ChevronRight, Home } from "lucide-react";
 import { useI18n } from "@/lib/i18n-context";
+import { resolveHeroImage } from "@/lib/hero-images";
 
 /**
  * Compact hero band used at the top of dedicated content pages
@@ -41,12 +42,15 @@ export function PageHero({
   breadcrumbs?: Array<{ label: string; href?: string }>;
   cta?: React.ReactNode;
   /**
-   * Path to the background photograph (under `/public`). Defaults to
-   * the shared Asondo cocoa hero. Callers should pass one of the
-   * `/photoN.jpg` images to give a page its own visual identity while
-   * keeping the rest of the hero chrome unchanged.
+   * Path to the background photograph (under `/public`) or a static
+   * import of the same. Defaults to the shared Asondo cocoa hero.
+   * Callers may pass either form: known string paths are mapped to
+   * the matching static import inside the component (see
+   * `resolveHeroImage`), so next/image can emit a blur placeholder
+   * and the hero appears INSTANTLY on every navigation instead of
+   * waiting for the full JPEG to download.
    */
-  bgImage?: string;
+  bgImage?: string | StaticImageData;
   /**
    * `object-position` value for the background `<Image>` on every
    * breakpoint, applied via inline style. Defaults to `center`.
@@ -90,23 +94,36 @@ export function PageHero({
       {/* Same Ivorian-cocoa photograph as the home hero. We don't
           parallax it here — page heroes are short bands, not full
           screens — but the visual identity stays unmistakable. */}
-      <div className="absolute inset-0 z-0">
-        <Image
-          src={bgImage}
-          alt=""
-          fill
-          priority
-          fetchPriority="high"
-          sizes="100vw"
-          quality={80}
-          className={`object-cover${
-            bgPositionClassName ? ` ${bgPositionClassName}` : ""
-          }`}
-          style={
-            bgPositionClassName ? undefined : { objectPosition: bgPosition }
-          }
-        />
-      </div>
+      {(() => {
+        const resolvedBg = resolveHeroImage(bgImage);
+        const isStatic = typeof resolvedBg !== "string";
+        return (
+          <div className="absolute inset-0 z-0">
+            <Image
+              src={resolvedBg}
+              alt=""
+              fill
+              priority
+              fetchPriority="high"
+              sizes="100vw"
+              quality={80}
+              /* `placeholder="blur"` is only valid when next/image has
+                 a StaticImageData (or an explicit blurDataURL); the
+                 LQIP is what makes the hero visible on every nav
+                 before the full JPEG decodes. */
+              placeholder={isStatic ? "blur" : "empty"}
+              className={`object-cover${
+                bgPositionClassName ? ` ${bgPositionClassName}` : ""
+              }`}
+              style={
+                bgPositionClassName
+                  ? undefined
+                  : { objectPosition: bgPosition }
+              }
+            />
+          </div>
+        );
+      })()}
 
       {/* Brand wash overlay. The green anchor is kept strong so the
           white headline stays legible on every photo, but the orange
