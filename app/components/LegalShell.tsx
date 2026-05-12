@@ -131,9 +131,11 @@ export function LegalShell({
       {/* Content */}
       <section className="relative py-16 sm:py-20 overflow-hidden">
         {bgPhoto ? (
-          /* Heavy cream tint so the photo only adds atmosphere, never
-             competes with the dense legal-prose typography. */
-          <SectionBackground src={bgPhoto} tint={0.93} />
+          /* Slightly heavier cream tint than the rest of the site
+             (~0.55 vs 0.25 default) so the photo is still clearly
+             visible behind the legal-prose body without making the
+             dense paragraphs unreadable. */
+          <SectionBackground src={bgPhoto} tint={0.55} />
         ) : null}
         <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto legal-prose">

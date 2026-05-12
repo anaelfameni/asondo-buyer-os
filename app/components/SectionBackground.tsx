@@ -63,7 +63,10 @@ export function SectionBackground({
       : "object-center";
 
   const tintColor = variant === "dark" ? "31, 61, 47" : "253, 251, 247";
-  const tintAlpha = tint ?? (variant === "dark" ? 0.78 : 0.86);
+  // Default tints tuned so the photograph is ~75% visible (tint ~0.25).
+  // High enough that titles, cards and orange CTAs still pop, low
+  // enough that the photograph reads as photograph, not as wallpaper.
+  const tintAlpha = tint ?? (variant === "dark" ? 0.3 : 0.25);
   const fadeStop = variant === "dark" ? "#0F2619" : "#FDFBF7";
 
   return (
@@ -73,7 +76,10 @@ export function SectionBackground({
         alt={alt}
         fill
         sizes="100vw"
-        quality={70}
+        // Bumped from 70 to 85 now that the photo is ~75% visible:
+        // JPEG compression artifacts would be obvious on cocoa-bean
+        // close-ups at the previous quality setting.
+        quality={85}
         className={`object-cover ${objectPosition}`}
       />
 
