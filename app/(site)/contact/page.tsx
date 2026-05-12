@@ -19,6 +19,10 @@ export default function ContactPage() {
   return (
     <main>
       <PageHero
+        // Same EUDR-aligned cocoa photo as the `/eudr` hero so a buyer
+        // landing on /contact reads the page as the direct conversion
+        // step of the compliance journey.
+        bgImage="/photo1.jpg"
         eyebrow="Contact · Réponse < 24h"
         title="Discutons cacao."
         subtitle="Précisez votre besoin (volume, port de destination, exigences qualité, calendrier). Notre équipe vous prépare une offre personnalisée et vous répond en moins de 24 heures ouvrées."

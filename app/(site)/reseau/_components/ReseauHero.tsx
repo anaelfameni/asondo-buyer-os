@@ -12,6 +12,11 @@ export function ReseauHero() {
   return (
     <PageHero
       bgImage="/photo5.jpg"
+      // Anchor the photograph at the top so the cocoa farmer's full
+      // upper body (head + shoulders) is visible above the motorbike,
+      // instead of being cropped at neck level by the default centre
+      // anchor.
+      bgPosition="top"
       eyebrow={fr ? "Sourcing · Côte d'Ivoire" : "Sourcing · Côte d'Ivoire"}
       title={
         fr

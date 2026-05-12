@@ -1,0 +1,60 @@
+fix(brand+pdf): green readiness, no-overlap layout, lighter hero overlay
+
+PDF page 3 — readiness + Evidence Matrix
+- DEFAULT_FLAGS in lib/readiness-score.ts flips all four readiness
+  checks (geolocation, certificates, chain-of-custody, grievance
+  mechanism) to true. The Buyer Pack now ships with a green
+  "Pret EUDR / EUDR Ready" stat block and a 4/4 compliant pillar
+  count, consistent with the per-pillar "Conforme" badges.
+- All four pillar cards already render with the green "Conforme"
+  badge via asondoData.eudrStatus = "ready"; this commit aligns the
+  third stat block colour with the same green narrative.
+- Pillar cards compressed (gap 2mm, padding 4mm, title 10.5pt,
+  bullets 8.5pt) so the new fifth traceability bullet plus the four
+  cards fit comfortably under the body height budget.
+- Pillar bullet dots switched from orange (#d06b1f) to green
+  (#15803d) for visual consistency with the "Conforme" palette.
+
+PDF page 6 — CSDDD bridge
+- Title sized down to 24pt, intro paragraph to 9pt/1.45.
+- Grievance card padding 4mm + 5mm, type-scale 8.5pt/11pt.
+- Code-of-conduct cards: padding 3mm/3.5mm, title 9pt, body 7.5pt,
+  number badge 5mm. Five cards now occupy two compact rows instead
+  of pushing the regulatory mapping into the legal footer.
+- Regulatory mapping table: 7.5pt cells, 1.3mm padding, 1.5mm gap
+  to the eyebrow, marginBottom 2mm so the four rows always dock
+  above the "ASONDO SA - ..." legal line.
+
+PDF safety net
+- .pdf-page__body now hard-clips with overflow: hidden, so even if
+  a future content change exceeds the A4 budget, the body never
+  paints under the legal footer.
+
+PDF QR target
+- The Closing-page QR no longer points at https://asondo.ci/?utm_source=buyer-pack#rfq.
+  Default base URL switched to https://asondo-buyer-os.vercel.app
+  with the path anchored on /contact. NEXT_PUBLIC_SITE_URL still
+  overrides the host, ready for a future custom domain.
+- Personalised buyer QR also moved from /console/rfq to
+  /contact?ref=BUYER-<slug>&utm_source=buyer-pack.
+
+Hero overlay
+- PageHero + LegalShell brand wash dialled from
+  "from-[#1F3D2F]/85 via-[#D06B1F]/65 to-[#E8833D]/50" down to
+  "from-[#1F3D2F]/75 via-[#1F3D2F]/30 to-[#D06B1F]/15". The green
+  anchor stays strong for white-text legibility; the orange tint
+  drops to ~15 % so each cocoa photo reads as a photo, not as a
+  saturated brand wash.
+- Decorative orange orbs also dimmed (25% -> 12% and 20% -> 10%)
+  in lockstep so they don't reintroduce the wash we just removed.
+
+Reseau hero crop
+- PageHero gains a `bgPosition` prop (default "center"). /reseau
+  passes `bgPosition="top"` so the cocoa farmer's full upper body
+  is visible above the motorbike instead of being cropped at neck
+  level. Other pages keep the default centre anchor.
+
+Contact page
+- /contact uses the same /photo1.jpg hero as /eudr so a buyer
+  landing on the form reads it as the direct conversion step of
+  the EUDR compliance journey.

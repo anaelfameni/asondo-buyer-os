@@ -82,15 +82,20 @@ export function EvidenceMatrix({
       legalFooter={legalFooter}
       variant="cream"
     >
-      <div className="pdf-spacer-md" />
+      <div style={{ height: "3mm" }} />
       <div className="pdf-eyebrow">{content.eyebrow}</div>
-      <h1 className="pdf-h1">{content.title}</h1>
-      <div className="pdf-spacer-sm" />
-      <p className="pdf-body pdf-body--muted" style={{ maxWidth: "165mm" }}>
+      <h1 className="pdf-h1" style={{ fontSize: "26pt", lineHeight: 1.1 }}>
+        {content.title}
+      </h1>
+      <div style={{ height: "2mm" }} />
+      <p
+        className="pdf-body pdf-body--muted"
+        style={{ maxWidth: "170mm", fontSize: "9.5pt", lineHeight: 1.45 }}
+      >
         {content.intro}
       </p>
 
-      <div className="pdf-spacer-md" />
+      <div style={{ height: "4mm" }} />
 
       {/* Summary banner */}
       <div style={{ display: "flex", gap: "3mm" }}>
@@ -112,7 +117,7 @@ export function EvidenceMatrix({
         >
           <div
             className="pdf-statblock__value"
-            style={{ color: readinessTheme.color, fontSize: "20pt" }}
+            style={{ color: readinessTheme.color, fontSize: "17pt" }}
           >
             {readinessLabel}
           </div>
@@ -122,7 +127,7 @@ export function EvidenceMatrix({
         </div>
       </div>
 
-      <div className="pdf-spacer-md" />
+      <div style={{ height: "4mm" }} />
 
       {/* 2 x 2 pillar grid */}
       <div
@@ -130,8 +135,9 @@ export function EvidenceMatrix({
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
           gridTemplateRows: "auto auto",
-          gap: "4mm",
+          gap: "3mm",
           flex: "1 1 0",
+          minHeight: 0,
         }}
       >
         {PILLAR_ORDER.map(({ id, dataId }) => {
@@ -153,15 +159,15 @@ export function EvidenceMatrix({
         })}
       </div>
 
-      <div className="pdf-spacer-sm" />
       <div
         style={{
-          fontSize: "8pt",
+          fontSize: "7.5pt",
           fontStyle: "italic",
           color: "#6b7280",
-          padding: "2mm 0",
+          padding: "2mm 0 0",
           borderTop: "0.2mm solid #ece6d8",
-          marginTop: "2mm",
+          marginTop: "3mm",
+          lineHeight: 1.4,
         }}
       >
         {content.ndaNote}

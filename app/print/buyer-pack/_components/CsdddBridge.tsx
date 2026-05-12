@@ -39,40 +39,50 @@ export function CsdddBridge({
       variant="cream"
       watermark={watermarkText}
     >
-      <div className="pdf-spacer-md" />
+      <div style={{ height: "3mm" }} />
       <div className="pdf-eyebrow">{content.eyebrow}</div>
-      <h1 className="pdf-h1">{content.title}</h1>
-      <div className="pdf-spacer-sm" />
-      <p className="pdf-body pdf-body--muted" style={{ maxWidth: "165mm" }}>
+      <h1 className="pdf-h1" style={{ fontSize: "24pt", lineHeight: 1.1 }}>
+        {content.title}
+      </h1>
+      <div style={{ height: "2mm" }} />
+      <p
+        className="pdf-body pdf-body--muted"
+        style={{ maxWidth: "170mm", fontSize: "9pt", lineHeight: 1.45 }}
+      >
         {content.intro}
       </p>
 
-      <div className="pdf-spacer-sm" />
+      <div style={{ height: "3mm" }} />
 
       {/* Grievance mechanism card */}
       <div
         className="pdf-card pdf-card--green"
-        style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "5mm" }}
+        style={{
+          display: "grid",
+          gridTemplateColumns: "auto 1fr",
+          gap: "4mm",
+          padding: "4mm 5mm",
+        }}
       >
         <GrievanceIcon />
-        <div style={{ display: "flex", flexDirection: "column", gap: "2.5mm" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "1.6mm" }}>
           <div
             style={{
               fontFamily: "var(--font-inter), system-ui, sans-serif",
-              fontSize: "12pt",
+              fontSize: "11pt",
               fontWeight: 600,
               color: "#1f3d2f",
             }}
           >
             {content.grievanceTitle}
           </div>
-          <div style={{ fontSize: "9pt", lineHeight: 1.5, color: "#1a1a1a" }}>
+          <div style={{ fontSize: "8.5pt", lineHeight: 1.45, color: "#1a1a1a" }}>
             {content.grievanceChannels}
           </div>
           <div
             style={{
-              fontSize: "9pt",
-              lineHeight: 1.5,
+              fontSize: "8.5pt",
+              lineHeight: 1.45,
               color: "#1a1a1a",
               fontWeight: 500,
             }}
@@ -81,12 +91,13 @@ export function CsdddBridge({
           </div>
           <div
             style={{
-              fontSize: "8.5pt",
+              fontSize: "8pt",
               fontStyle: "italic",
               color: "#4b5563",
               borderLeft: "0.6mm solid #d06b1f",
-              paddingLeft: "3mm",
-              marginTop: "1mm",
+              paddingLeft: "2.5mm",
+              marginTop: "0.5mm",
+              lineHeight: 1.4,
             }}
           >
             {content.grievanceStats}
@@ -94,19 +105,19 @@ export function CsdddBridge({
         </div>
       </div>
 
-      <div className="pdf-spacer-sm" />
+      <div style={{ height: "3mm" }} />
 
       {/* Code of conduct grid */}
       <div className="pdf-eyebrow" style={{ color: "#1f3d2f" }}>
         {content.codeTitle}
       </div>
-      <div className="pdf-spacer-sm" />
+      <div style={{ height: "2mm" }} />
 
       <div
         style={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
-          gap: "3mm",
+          gap: "2.5mm",
         }}
       >
         {content.codeItems.map((item, i) => (
@@ -116,27 +127,28 @@ export function CsdddBridge({
               background: "#fff",
               border: "0.3mm solid #ece6d8",
               borderRadius: "2mm",
-              padding: "4mm",
+              padding: "3mm 3.5mm",
               display: "flex",
               flexDirection: "column",
-              gap: "1.6mm",
+              gap: "1.2mm",
               breakInside: "avoid",
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: "2.5mm" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "2mm" }}>
               <div
                 style={{
-                  width: "6mm",
-                  height: "6mm",
-                  borderRadius: "1.4mm",
+                  width: "5mm",
+                  height: "5mm",
+                  borderRadius: "1.2mm",
                   background: "linear-gradient(135deg, #d06b1f, #b85814)",
                   color: "#fdfbf7",
                   fontFamily: "var(--font-fraunces), Georgia, serif",
                   fontWeight: 700,
-                  fontSize: "9pt",
+                  fontSize: "8pt",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  flexShrink: 0,
                 }}
               >
                 {String(i + 1).padStart(2, "0")}
@@ -144,7 +156,7 @@ export function CsdddBridge({
               <div
                 style={{
                   fontFamily: "var(--font-inter), system-ui, sans-serif",
-                  fontSize: "10pt",
+                  fontSize: "9pt",
                   fontWeight: 600,
                   color: "#1f3d2f",
                   lineHeight: 1.25,
@@ -154,39 +166,39 @@ export function CsdddBridge({
                 {item.title}
               </div>
             </div>
-            <div style={{ fontSize: "8.5pt", lineHeight: 1.45, color: "#4b5563" }}>
+            <div style={{ fontSize: "7.5pt", lineHeight: 1.4, color: "#4b5563" }}>
               {item.body}
             </div>
           </div>
         ))}
       </div>
 
-      {/* Regulatory mapping table — wrapped in a flex `marginTop: auto`
-          container so it pushes to the bottom of the page body and a
-          fixed margin-bottom keeps it from kissing the legal footer.
-          Type-scale is also slightly compressed so the four rows always
-          fit without overlapping the closing footer block. */}
+      {/* Regulatory mapping table — pushed to the bottom of the body via
+          marginTop:auto, with a generous marginBottom safety margin so
+          the four rows never collide with the "ASONDO SA · …" legal
+          footer. The body has `overflow: hidden` as a last-line defense
+          (see styles.css). */}
       <div
         style={{
           marginTop: "auto",
-          paddingTop: "4mm",
-          marginBottom: "3mm",
+          paddingTop: "3mm",
+          marginBottom: "2mm",
         }}
       >
         <div className="pdf-eyebrow" style={{ color: "#1f3d2f" }}>
           {content.mappingTitle}
         </div>
-        <div style={{ height: "2mm" }} />
+        <div style={{ height: "1.5mm" }} />
 
         <table
           className="pdf-mapping"
-          style={{ fontSize: "8pt" }}
+          style={{ fontSize: "7.5pt" }}
         >
           <tbody>
             {content.mappingRows.map((row, i) => (
               <tr key={i}>
-                <td style={{ padding: "1.6mm 3mm" }}>{row.framework}</td>
-                <td style={{ padding: "1.6mm 3mm", color: "#4b5563" }}>
+                <td style={{ padding: "1.3mm 3mm" }}>{row.framework}</td>
+                <td style={{ padding: "1.3mm 3mm", color: "#4b5563" }}>
                   {row.coverage}
                 </td>
               </tr>

@@ -31,6 +31,7 @@ export function PageHero({
   breadcrumbs,
   cta,
   bgImage = "/backgroundhero.jpg",
+  bgPosition = "center",
 }: {
   eyebrow?: string;
   title: string;
@@ -45,6 +46,13 @@ export function PageHero({
    * keeping the rest of the hero chrome unchanged.
    */
   bgImage?: string;
+  /**
+   * `object-position` value for the background `<Image>`. Defaults
+   * to `center`. `/reseau` overrides this with `"top"` so the cocoa
+   * farmer's portrait is visible from the head instead of being
+   * cropped at neck level.
+   */
+  bgPosition?: "center" | "top" | "bottom" | "left" | "right";
 }) {
   const { locale } = useI18n();
 
@@ -60,14 +68,19 @@ export function PageHero({
           fill
           priority
           quality={80}
-          className="object-cover object-center"
+          className="object-cover"
+          style={{ objectPosition: bgPosition }}
         />
       </div>
 
-      {/* Same green-to-orange overlay gradient as the home hero,
-          slightly denser so the dark cream text stays legible at
-          this compact size. */}
-      <div className="absolute inset-0 z-10 bg-gradient-to-br from-[#1F3D2F]/85 via-[#D06B1F]/65 to-[#E8833D]/50 pointer-events-none" />
+      {/* Brand wash overlay. The green anchor is kept strong so the
+          white headline stays legible on every photo, but the orange
+          mid/end stops are dialled down to ~10–15 % so the photograph
+          actually reads as a photograph instead of a saturated orange
+          tint. The home `HeroBanner` keeps its denser orange because
+          its background is the curated brand photograph; page heroes
+          rotate cocoa-farmer photos that need to breathe. */}
+      <div className="absolute inset-0 z-10 bg-gradient-to-br from-[#1F3D2F]/75 via-[#1F3D2F]/30 to-[#D06B1F]/15 pointer-events-none" />
 
       {/* Bottom fade into the page's cream body so the hero never
           looks like a hard cut on its way to the content below. */}
@@ -79,14 +92,15 @@ export function PageHero({
         }}
       />
 
-      {/* Subtle decorative orange orbs (kept smaller than home hero). */}
+      {/* Decorative orange orbs — kept dimmer so they don't reintroduce
+          the orange wash we just removed. */}
       <div
         aria-hidden
-        className="absolute -top-24 -right-24 w-[320px] h-[320px] rounded-full bg-[#F4A866]/25 blur-[90px] z-10 pointer-events-none"
+        className="absolute -top-24 -right-24 w-[320px] h-[320px] rounded-full bg-[#F4A866]/12 blur-[90px] z-10 pointer-events-none"
       />
       <div
         aria-hidden
-        className="absolute -bottom-32 -left-32 w-[360px] h-[360px] rounded-full bg-[#F2B83E]/20 blur-[100px] z-10 pointer-events-none"
+        className="absolute -bottom-32 -left-32 w-[360px] h-[360px] rounded-full bg-[#F2B83E]/10 blur-[100px] z-10 pointer-events-none"
       />
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-20">

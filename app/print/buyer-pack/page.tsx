@@ -98,11 +98,17 @@ export default async function BuyerPackPrintPage({
     },
   ];
 
-  // QR code → pre-filled RFQ form on the public site
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://asondo.ci";
+  // QR code → public RFQ form on /contact. We anchor on the
+  // production Vercel deployment because the printed QR has to keep
+  // resolving even when readers scan it offline weeks after the PDF
+  // was generated; `NEXT_PUBLIC_SITE_URL` is honoured so the CEO can
+  // override this in a future custom-domain setup without redeploy.
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+    "https://asondo-buyer-os.vercel.app";
   const qrUrl = buyer
-    ? `${baseUrl}/console/rfq?ref=BUYER-${slugify(buyer)}&utm_source=buyer-pack`
-    : `${baseUrl}/?utm_source=buyer-pack#rfq`;
+    ? `${baseUrl}/contact?ref=BUYER-${slugify(buyer)}&utm_source=buyer-pack`
+    : `${baseUrl}/contact?utm_source=buyer-pack`;
   const qrSvgString = await renderQrSvg(qrUrl, { size: 160 });
 
   const watermarkText = lang === "fr" ? "CONFIDENTIEL" : "CONFIDENTIAL";

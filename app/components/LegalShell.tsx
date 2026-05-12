@@ -62,8 +62,12 @@ export function LegalShell({
           />
         </div>
 
-        {/* Same green-to-orange overlay gradient as the home hero. */}
-        <div className="absolute inset-0 z-10 bg-gradient-to-br from-[#1F3D2F]/85 via-[#D06B1F]/65 to-[#E8833D]/50 pointer-events-none" />
+        {/* Same brand wash as PageHero — strong green anchor for
+            white-text legibility, orange dialled down to ~10–15 % so
+            the cocoa photo reads as a photo and not as a saturated
+            tint. The CEO and legal counsel can always reach the dark
+            cream prose body just below the band. */}
+        <div className="absolute inset-0 z-10 bg-gradient-to-br from-[#1F3D2F]/75 via-[#1F3D2F]/30 to-[#D06B1F]/15 pointer-events-none" />
 
         {/* Bottom fade into the page's cream body. */}
         <div
@@ -74,14 +78,15 @@ export function LegalShell({
           }}
         />
 
-        {/* Subtle decorative orbs, kept smaller than home hero. */}
+        {/* Decorative orbs — dimmed in lockstep with the overlay so
+            they don't reintroduce the orange wash we just removed. */}
         <div
           aria-hidden
-          className="absolute -top-24 -right-24 w-[320px] h-[320px] rounded-full bg-[#F4A866]/25 blur-[90px] z-10 pointer-events-none"
+          className="absolute -top-24 -right-24 w-[320px] h-[320px] rounded-full bg-[#F4A866]/12 blur-[90px] z-10 pointer-events-none"
         />
         <div
           aria-hidden
-          className="absolute -bottom-32 -left-32 w-[360px] h-[360px] rounded-full bg-[#F2B83E]/20 blur-[100px] z-10 pointer-events-none"
+          className="absolute -bottom-32 -left-32 w-[360px] h-[360px] rounded-full bg-[#F2B83E]/10 blur-[100px] z-10 pointer-events-none"
         />
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-20">

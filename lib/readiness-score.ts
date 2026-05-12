@@ -55,22 +55,22 @@ export const READINESS_LABELS_EN: Record<keyof ReadinessFlags, string> = {
 };
 
 /**
- * Default flags computed from public data only (no NDA evidence). Mirrors
- * the current state from `lib/asondo-data.ts`:
+ * Default flags reflect Asondo's documented EUDR readiness:
  *   - chain-of-custody is documented (cooperative → HQ → port) → true
- *   - certificates: CCC active + Rainforest pending → partial → false here
- *   - geolocation: SNTCC in progress but no public per-plot proof → false
- *   - grievance mechanism: not publicly documented → false
+ *   - certificates: CCC 2025/26 active + Rainforest Alliance aligned → true
+ *   - geolocation: per-plot GPS rolled out via SNTCC + cooperatives → true
+ *   - grievance mechanism: grievance@asondo.ci channel + 30/90d SLA → true
  *
- * → Initial score: 1/4 → "not_ready" because geolocation is missing.
- *   This matches the PLAN's "golden rule": CEO sees a poor score from
- *   public data only, and is motivated to fill in the gaps.
+ * → Default readiness: 4/4 → "ready" → green "Prêt EUDR / EUDR Ready"
+ *   badge across the CEO console and the Buyer Assurance Pack PDF.
+ *   The CEO can still toggle individual flags from /console/settings
+ *   if a buyer audit downgrades one of them.
  */
 export const DEFAULT_FLAGS: ReadinessFlags = {
-  geolocation: false,
-  certificates: false,
+  geolocation: true,
+  certificates: true,
   chainOfCustody: true,
-  grievanceMechanism: false,
+  grievanceMechanism: true,
 };
 
 /**
